@@ -21,9 +21,12 @@ namespace ParkingLotApi.Dtos
                 this.Location = parkingLotEntity?.Location;
             }
 
-            this.Name = "default";
-            this.Capacity = 0;
-            this.Location = "default";
+            else
+            {
+                this.Name = "default";
+                this.Capacity = 0;
+                this.Location = "default";
+            }
         }
 
         public string Name { get; set; }
