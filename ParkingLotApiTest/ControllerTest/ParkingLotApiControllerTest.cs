@@ -43,7 +43,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_POST_Add_Correct_Parkinglot_To_DataBase_Fail_Given_Repeated_ParkingLot_Name()
+        public async Task Should_POST_Return_Conflict_Given_Repeated_ParkingLot_Name()
         {
             //Given
             var client = GetClient();
@@ -62,6 +62,27 @@ namespace ParkingLotApiTest.ControllerTest
 
             //Then
             Assert.Equal(HttpStatusCode.Conflict, postResponse.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_POST_Return_BadRequest_Given_Illegal_Input()
+        {
+            //Given
+            var client = GetClient();
+            ParkinglotDTO parkinglotDto = new ParkinglotDTO()
+            {
+                Name = string.Empty,
+                Capacity = 10,
+                Location = "WuDaoKong"
+            };
+            var httpContent = JsonConvert.SerializeObject(parkinglotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+            //When
+            var postResponse = await client.PostAsync("/ParkingLotApi/ParkingLots", content);
+
+            //Then
+            Assert.Equal(HttpStatusCode.BadRequest, postResponse.StatusCode);
         }
     }
 }
