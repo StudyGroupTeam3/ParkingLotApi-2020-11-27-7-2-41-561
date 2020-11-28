@@ -37,5 +37,12 @@ namespace ParkingLotApi.Service
                 .FirstOrDefaultAsync(parkinglotEntity => parkinglotEntity.ID == parkinglotId);
             return new ParkinglotDTO(parkingLot);
         }
+
+        public async Task DeleteById(int id)
+        {
+            var foundParkingLot = await this.parkingLotDbContext.Parkinglots.FirstOrDefaultAsync(parkingLot => parkingLot.ID == id);
+            this.parkingLotDbContext.Parkinglots.Remove(foundParkingLot);
+            await this.parkingLotDbContext.SaveChangesAsync();
+        }
     }
 }

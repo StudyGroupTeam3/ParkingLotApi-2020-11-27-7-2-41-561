@@ -20,7 +20,7 @@ namespace ParkingLotApiTest.ServiceTest
         }
 
         [Fact]
-        public async Task Should_create_parkinglot_success_via_parkingLotService()
+        public async Task Should_Create_Parkinglot_Success_Via_ParkingLotService()
         {
             //Given
             var context = GetParkingLotDbContext();
@@ -31,14 +31,36 @@ namespace ParkingLotApiTest.ServiceTest
                 Location = "WuDaoKong"
             };
 
-            ParkingLotApiService companyService = new ParkingLotApiService(context);
+            ParkingLotApiService parkingLotApiService = new ParkingLotApiService(context);
 
             //When
-            var addedParkinglotID = await companyService.AddParkingLotAsnyc(parkinglotDto);
-            var returnParkinglot = await companyService.GetById(addedParkinglotID);
+            var addedParkinglotID = await parkingLotApiService.AddParkingLotAsnyc(parkinglotDto);
+            var returnParkinglot = await parkingLotApiService.GetById(addedParkinglotID);
 
             //Then
             Assert.Equal(parkinglotDto, returnParkinglot);
+        }
+
+        [Fact]
+        public async Task Should_Delete_Parkinglot_Success_Via_ParkingLotService()
+        {
+            //Given
+            var context = GetParkingLotDbContext();
+            ParkingLotApiService parkingLotApiService = new ParkingLotApiService(context);
+            List<ParkinglotDTO> parkingLotDtos = GenerateSomeParkinglots();
+            foreach (var parkingLotDto in parkingLotDtos)
+            {
+                await parkingLotApiService.AddParkingLotAsnyc(parkingLotDto);
+            }
+
+            var expectedCount = context.Parkinglots.ToList().Count - 1;
+
+            //When
+            await parkingLotApiService.DeleteById(context.Parkinglots.ToList()[0].ID);
+            var actualCount = context.Parkinglots.ToList().Count;
+
+            //Then
+            Assert.Equal(expectedCount, actualCount);
         }
 
         private ParkingLotContext GetParkingLotDbContext()
@@ -47,6 +69,32 @@ namespace ParkingLotApiTest.ServiceTest
             var scopedServices = scope.ServiceProvider;
             ParkingLotContext context = scopedServices.GetRequiredService<ParkingLotContext>();
             return context;
+        }
+
+        private List<ParkinglotDTO> GenerateSomeParkinglots()
+        {
+            ParkinglotDTO parkinglotDto = new ParkinglotDTO()
+            {
+                Name = "SuperPark_1",
+                Capacity = 10,
+                Location = "WuDaoKong"
+            };
+
+            ParkinglotDTO parkinglotDto1 = new ParkinglotDTO()
+            {
+                Name = "SuperPark_2",
+                Capacity = 10,
+                Location = "XiDan"
+            };
+
+            ParkinglotDTO parkinglotDto2 = new ParkinglotDTO()
+            {
+                Name = "SuperPark_3",
+                Capacity = 10,
+                Location = "XiDan"
+            };
+
+            return new List<ParkinglotDTO>() { parkinglotDto, parkinglotDto1, parkinglotDto2 };
         }
     }
 }
