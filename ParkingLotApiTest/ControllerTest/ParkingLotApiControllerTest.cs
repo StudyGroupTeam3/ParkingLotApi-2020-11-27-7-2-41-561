@@ -40,5 +40,29 @@ namespace ParkingLotApiTest.ControllerTest
             //Then
             Assert.Equal(parkinglotDto, actualParkinglot);
         }
+
+        [Fact]
+        public async Task Should_POST_Add_Correct_Parkinglot_To_DataBase_Fail_Given_Repeated_ParkingLot_Name()
+        {
+            //Given
+            var client = GetClient();
+            ParkinglotDTO parkinglotDto = new ParkinglotDTO()
+            {
+                Name = "SuperPark_1",
+                Capacity = 10,
+                Location = "WuDaoKong"
+            };
+            var httpContent = JsonConvert.SerializeObject(parkinglotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+            //When
+            var postResponse = await client.PostAsync("/ParkingLotApi/ParkingLots", content);
+            var id = postResponse.Headers.Location.AbsolutePath.Split("/").ToList().LastOrDefault();
+            var getResponse = await client.GetAsync($"/ParkingLotApi/ParkingLots/{id}");
+            var body = await getResponse.Content.ReadAsStringAsync();
+            var actualParkinglot = JsonConvert.DeserializeObject<ParkinglotDTO>(body);
+            //Then
+            Assert.Equal(parkinglotDto, actualParkinglot);
+        }
     }
 }

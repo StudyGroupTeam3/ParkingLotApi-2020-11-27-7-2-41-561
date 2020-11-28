@@ -22,7 +22,21 @@ namespace ParkingLotApi.Controllers
         [HttpPost("ParkingLots")]
         public async Task<ActionResult<ParkinglotDTO>> CreateParkingLot(ParkinglotDTO parkinglotDto)
         {
+            //if (parkinglotDto.Name = null || parkinglotDto.Capacity <= 0 || parkinglotDto.Location = null)
+            //{
+            //    return ""
+            //}
+
             var id = await parkingLotService.AddParkingLotAsnyc(parkinglotDto);
+            if (id == -1)
+            {
+                return Conflict(new
+                {
+                    message = $"An existing parkinglot " +
+                                                $"with the name '{parkinglotDto.Name}' was already found."
+                });
+            }
+
             return CreatedAtAction(nameof(GetById), new { id = id }, parkinglotDto);
         }
 
