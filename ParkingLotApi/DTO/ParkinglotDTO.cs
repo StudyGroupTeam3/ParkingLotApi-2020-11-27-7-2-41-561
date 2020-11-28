@@ -2,11 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ParkingLotApi.Data_Entity;
 
 namespace ParkingLotApi.DTO
 {
     public class ParkinglotDTO
     {
+        public ParkinglotDTO()
+        {
+        }
+
+        public ParkinglotDTO(ParkinglotEntity parkinglotEntity)
+        {
+            Name = parkinglotEntity.Name;
+            Capacity = parkinglotEntity.Capacity;
+            Location = parkinglotEntity.Location;
+        }
+
         public string Name { get; set; }
         public int Capacity { get; set; }
         public string Location { get; set; }
