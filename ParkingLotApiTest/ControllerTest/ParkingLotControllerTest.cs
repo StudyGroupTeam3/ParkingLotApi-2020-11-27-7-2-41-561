@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ParkingLotApi;
@@ -75,10 +76,42 @@ namespace ParkingLotApiTest.ControllerTest
             await client.PostAsync("/parkinglots", GetRequestContent(parkingLot3));
 
             var response = await client.GetAsync("/parkinglots");
+            var lots = await GetResponseContent<List<ParkingLot>>(response);
 
             // then
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal(3, context.ParkingLots.CountAsync().Result);
+            Assert.Equal(new List<ParkingLot>() { parkingLot1, parkingLot2, parkingLot3 }, lots);
+        }
+
+        [Fact]
+        public async Task Story1_AC4_Should_get_parkingLot_by_id()
+        {
+            // given
+            var parkingLot1 = new ParkingLot("Lot1", 10, "location1");
+            var parkingLot2 = new ParkingLot("Lot2", 10, "location1");
+
+            // when
+            await client.PostAsync("/parkinglots", GetRequestContent(parkingLot1));
+            var responseAdd = await client.PostAsync("/parkinglots", GetRequestContent(parkingLot2));
+
+            var response = await client.GetAsync(responseAdd.Headers.Location);
+            var lot = await GetResponseContent<ParkingLot>(response);
+            var responseNotFound = await client.GetAsync("/parkingLots/20");
+
+            // then
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(parkingLot2, lot);
+
+            Assert.Equal(HttpStatusCode.NotFound, responseNotFound.StatusCode);
+        }
+
+        private async Task<T> GetResponseContent<T>(HttpResponseMessage response)
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            var content = JsonConvert.DeserializeObject<T>(body);
+
+            return content;
         }
 
         private StringContent GetRequestContent(ParkingLot parkingLot)
