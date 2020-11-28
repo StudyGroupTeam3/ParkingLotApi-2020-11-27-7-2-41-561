@@ -64,16 +64,21 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(HttpStatusCode.Conflict, postResponse.StatusCode);
         }
 
-        [Fact]
-        public async Task Should_POST_Return_BadRequest_Given_Illegal_Input()
+        [Theory]
+        [InlineData(null, 10, "WuDaoKong")]
+        [InlineData("Superpark_3", -1, "WuDaoKong")]
+        [InlineData("Superpark_3", 10, null)]
+        [InlineData("", 10, "WuDaoKong")]
+        [InlineData("Superpark_3", 10, "")]
+        public async Task Should_POST_Return_BadRequest_Given_Illegal_Input(string name, int capacity, string location)
         {
             //Given
             var client = GetClient();
             ParkinglotDTO parkinglotDto = new ParkinglotDTO()
             {
-                Name = string.Empty,
-                Capacity = 10,
-                Location = "WuDaoKong"
+                Name = name,
+                Capacity = capacity,
+                Location = location
             };
             var httpContent = JsonConvert.SerializeObject(parkinglotDto);
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
