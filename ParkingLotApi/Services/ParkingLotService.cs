@@ -24,14 +24,19 @@ namespace ParkingLotApi.Services
             return new ParkingLotDto(foundParkingLot);
         }
 
-        //public async Task<string> AddParkingLot(ParkingLotDto parkingLotDto)
-        //{
-        //    ParkingLotEntity parkingLotEntity = new ParkingLotEntity(parkingLotDto);
+        public async Task<string> AddParkingLot(ParkingLotDto parkingLotDto)
+        {
+            ParkingLotEntity parkingLotEntity = new ParkingLotEntity(parkingLotDto);
+            var foundParkingLot = await GetParkingLotByName(parkingLotDto.Name);
+            if (foundParkingLot.Name == "default")
+            {
+                await this.parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
+                await this.parkingLotContext.SaveChangesAsync();
+                return parkingLotEntity.Name;
+            }
 
-        //    await parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
-        //    await this.parkingLotContext.SaveChangesAsync();
-        //    return parkingLotEntity.Name;
-        //}
+            return null;
+        }
 
         public async Task DeleteParkingLot(string name)
         {

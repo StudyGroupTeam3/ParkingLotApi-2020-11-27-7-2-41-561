@@ -14,9 +14,16 @@ namespace ParkingLotApi.Dtos
 
         public ParkingLotDto(ParkingLotEntity parkingLotEntity)
         {
-            this.Name = parkingLotEntity.Name;
-            this.Capacity = parkingLotEntity.Capacity;
-            this.Location = parkingLotEntity.Location;
+            if (parkingLotEntity != null)
+            {
+                this.Name = parkingLotEntity.Name;
+                this.Capacity = parkingLotEntity.Capacity;
+                this.Location = parkingLotEntity?.Location;
+            }
+
+            this.Name = "default";
+            this.Capacity = 0;
+            this.Location = "default";
         }
 
         public string Name { get; set; }
