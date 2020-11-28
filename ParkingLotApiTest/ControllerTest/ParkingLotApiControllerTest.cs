@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -88,6 +89,32 @@ namespace ParkingLotApiTest.ControllerTest
 
             //Then
             Assert.Equal(HttpStatusCode.BadRequest, postResponse.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_DELETE_By_ID_Success_Given_Correct_ID()
+        {
+            //Given
+            var client = GetClient();
+            ParkinglotDTO parkinglotDto = new ParkinglotDTO()
+            {
+                Name = "SuperPark_1",
+                Capacity = 10,
+                Location = "WuDaoKong"
+            };
+            var httpContent = JsonConvert.SerializeObject(parkinglotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var postResponse = await client.PostAsync("/ParkingLotApi/ParkingLots", content);
+            var id = postResponse.Headers.Location.AbsolutePath.Split("/").ToList().LastOrDefault();
+
+            //When
+            await client.DeleteAsync($"/ParkingLotApi/ParkingLots/{id}");
+            var getAllResponse = await client.GetAsync("/ParkingLotApi/ParkingLots");
+            var body = await getAllResponse.Content.ReadAsStringAsync();
+            var returnParkinglots = JsonConvert.DeserializeObject<List<ParkinglotDTO>>(body);
+
+            //Then
+            Assert.Equal(0, returnParkinglots.Count);
         }
     }
 }

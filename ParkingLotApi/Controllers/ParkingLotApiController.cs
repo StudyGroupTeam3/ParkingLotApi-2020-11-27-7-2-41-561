@@ -50,5 +50,26 @@ namespace ParkingLotApi.Controllers
             var parkinglotDto = await this.parkingLotService.GetById(id);
             return Ok(parkinglotDto);
         }
+
+        [HttpGet("ParkingLots")]
+        public async Task<ActionResult<ParkinglotDTO>> GetAll(int id)
+        {
+            return Ok(await parkingLotService.GetAll());
+        }
+
+        [HttpDelete("ParkingLots/{id}")]
+        public async Task<ActionResult> DeleteById(int id)
+        {
+            var result = await this.parkingLotService.DeleteById(id);
+            if (result == false)
+            {
+                return NotFound(new
+                {
+                    message = $"Parkinglot with ID = {id} was not found"
+                });
+            }
+
+            return this.NoContent();
+        }
     }
 }
