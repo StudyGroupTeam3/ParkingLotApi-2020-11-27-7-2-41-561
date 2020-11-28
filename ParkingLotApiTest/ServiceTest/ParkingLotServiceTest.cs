@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using ParkingLotApi;
 using ParkingLotApi.Dtos;
+using ParkingLotApi.Models;
 using ParkingLotApi.Repository;
 using ParkingLotApi.Services;
 using System.Threading.Tasks;
@@ -78,6 +79,22 @@ namespace ParkingLotApiTest.ServiceTest
 
             // then
             Assert.Equal(parkingLot2, lot.Result);
+        }
+
+        [Fact]
+        public async Task Story1_AC5_Should_update_parkingLot_capacity()
+        {
+            // given
+            var parkingLot = new ParkingLot("Lot1", 10, "location1");
+            var updateModel = new ParkingLotUpdateModel(20);
+
+            // when
+            var id = await service.AddParkingLot(parkingLot);
+            await service.UpdateParkingLot(id, updateModel);
+            var lot = await service.GetParkingLotById(id);
+
+            // then
+            Assert.Equal(updateModel.Capacity, lot.Capacity);
         }
     }
 }

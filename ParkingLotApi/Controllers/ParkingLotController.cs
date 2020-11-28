@@ -4,6 +4,7 @@ using ParkingLotApi.Dtos;
 using ParkingLotApi.Services;
 using System.Linq;
 using System.Threading.Tasks;
+using ParkingLotApi.Models;
 
 namespace ParkingLotApi.Controllers
 {
@@ -60,6 +61,20 @@ namespace ParkingLotApi.Controllers
             }
 
             await service.DeleteParkingLot(id);
+            return NoContent();
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(int id, ParkingLotUpdateModel data)
+        {
+            var lotFound = await service.GetParkingLotById(id);
+
+            if (lotFound == null)
+            {
+                return NotFound("no lot match id");
+            }
+
+            await service.UpdateParkingLot(id, data);
             return NoContent();
         }
     }

@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
+using ParkingLotApi.Models;
 using Xunit;
 
 namespace ParkingLotApiTest.ControllerTest
@@ -106,6 +107,27 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(HttpStatusCode.NotFound, responseNotFound.StatusCode);
         }
 
+        [Fact]
+        public async Task Story1_AC5_Should_update_parkingLot_capacity()
+        {
+            // given
+            var parkingLot = new ParkingLot("Lot1", 10, "location1");
+            var updateModel = new ParkingLotUpdateModel(20);
+
+            // when
+            var responseAdd = await client.PostAsync("/parkinglots", GetRequestContent(parkingLot));
+            var response = await client.PatchAsync(responseAdd.Headers.Location, GetRequestContent(updateModel));
+            var responseNotFound = await client.PatchAsync("error uri", GetRequestContent(updateModel));
+            var responseGet = await client.GetAsync(responseAdd.Headers.Location);
+            var lot = await GetResponseContent<ParkingLot>(responseGet);
+
+            // then
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.Equal(updateModel.Capacity, lot.Capacity);
+
+            Assert.Equal(HttpStatusCode.NotFound, responseNotFound.StatusCode);
+        }
+
         private async Task<T> GetResponseContent<T>(HttpResponseMessage response)
         {
             var body = await response.Content.ReadAsStringAsync();
@@ -114,9 +136,9 @@ namespace ParkingLotApiTest.ControllerTest
             return content;
         }
 
-        private StringContent GetRequestContent(ParkingLot parkingLot)
+        private StringContent GetRequestContent<T>(T requestBody)
         {
-            var httpContent = JsonConvert.SerializeObject(parkingLot);
+            var httpContent = JsonConvert.SerializeObject(requestBody);
             var content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
 
             return content;
