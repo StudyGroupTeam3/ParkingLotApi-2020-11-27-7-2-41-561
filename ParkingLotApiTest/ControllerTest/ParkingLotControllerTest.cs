@@ -10,7 +10,6 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Enumerable = System.Linq.Enumerable;
 
 namespace ParkingLotApiTest.ControllerTest
 {
@@ -18,42 +17,41 @@ namespace ParkingLotApiTest.ControllerTest
     public class ParkingLotControllerTest : TestBase
     {
         private readonly ParkingLotContext context;
+        private readonly HttpClient client;
         public ParkingLotControllerTest(CustomWebApplicationFactory<Startup> factory) : base(factory)
         {
             var scope = Factory.Services.CreateScope();
             var scopeService = scope.ServiceProvider;
             context = scopeService.GetRequiredService<ParkingLotContext>();
+            client = GetClient();
         }
 
         [Fact]
         public async Task Story1_AC1_Should_add_parkingLot()
         {
             // given
-            var client = GetClient();
             var parkingLot = new ParkingLot("Lot1", 10, "location1");
 
             // when
-            var httpContent = JsonConvert.SerializeObject(parkingLot);
-            var content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var response = await client.PostAsync("/parkinglots", content);
+            var response = await client.PostAsync("/parkinglots", GetRequestContent(parkingLot));
+            var responseExistName = await client.PostAsync("/parkinglots", GetRequestContent(parkingLot));
 
             // then
             Assert.Equal(parkingLot, new ParkingLot(context.ParkingLots.FirstAsync().Result));
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             Assert.Contains("/parkingLots/1", response.Headers.Location.AbsoluteUri);
+
+            Assert.Equal(HttpStatusCode.BadRequest, responseExistName.StatusCode);
         }
 
         [Fact]
         public async Task Story1_AC2_Should_delete_parkingLot()
         {
             // given
-            var client = GetClient();
             var parkingLot = new ParkingLot("Lot1", 10, "location1");
 
             // when
-            var httpContent = JsonConvert.SerializeObject(parkingLot);
-            var content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var responseAdd = await client.PostAsync("/parkinglots", content);
+            var responseAdd = await client.PostAsync("/parkinglots", GetRequestContent(parkingLot));
             var responseFound = client.DeleteAsync(responseAdd.Headers.Location);
             var responseNotFound = client.DeleteAsync("error uri");
 
@@ -61,6 +59,14 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(HttpStatusCode.NoContent, responseFound.Result.StatusCode);
             Assert.Equal(HttpStatusCode.NotFound, responseNotFound.Result.StatusCode);
             Assert.Equal(0, context.ParkingLots.CountAsync().Result);
+        }
+
+        private StringContent GetRequestContent(ParkingLot parkingLot)
+        {
+            var httpContent = JsonConvert.SerializeObject(parkingLot);
+            var content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+            return content;
         }
     }
 }

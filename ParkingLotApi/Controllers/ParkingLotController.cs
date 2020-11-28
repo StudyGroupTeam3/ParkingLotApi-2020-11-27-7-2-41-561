@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Services;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ParkingLotApi.Controllers
@@ -19,6 +20,13 @@ namespace ParkingLotApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ParkingLot>> Add(ParkingLot parkingLot)
         {
+            var lotFound = service.GetAllParkingLots().Result.FirstOrDefault(lot => lot.Name == parkingLot.Name);
+
+            if (lotFound != null)
+            {
+                return BadRequest("lot with same name exists");
+            }
+
             var id = await service.AddParkingLot(parkingLot);
 
             return CreatedAtAction(nameof(GetById), new { id = id }, parkingLot);
@@ -27,17 +35,17 @@ namespace ParkingLotApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ParkingLot>> GetById(int id)
         {
-            var lot = await service.GetParkingLotById(id);
+            var lotFound = await service.GetParkingLotById(id);
 
-            return lot == null ? (ActionResult<ParkingLot>)NotFound("no lot match id") : Ok(lot);
+            return lotFound == null ? (ActionResult<ParkingLot>)NotFound("no lot match id") : Ok(lotFound);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var lot = await service.GetParkingLotById(id);
+            var lotFound = await service.GetParkingLotById(id);
 
-            if (lot == null)
+            if (lotFound == null)
             {
                 return NotFound("no lot match id");
             }

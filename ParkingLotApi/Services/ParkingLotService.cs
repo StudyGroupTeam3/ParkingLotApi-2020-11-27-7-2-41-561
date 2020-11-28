@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Repository;
 using System.Threading.Tasks;
@@ -35,6 +37,13 @@ namespace ParkingLotApi.Services
             var parkingLotEntity = context.ParkingLots.FirstOrDefaultAsync(lot => lot.Id == id).Result;
             context.ParkingLots.Remove(parkingLotEntity);
             await context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<ParkingLot>> GetAllParkingLots()
+        {
+            var parkingLotEntities = await context.ParkingLots.ToListAsync();
+
+            return parkingLotEntities.Select(lot => new ParkingLot(lot)).ToList();
         }
     }
 }
