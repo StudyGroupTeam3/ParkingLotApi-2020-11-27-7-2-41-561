@@ -116,5 +116,19 @@ namespace ParkingLotApiTest.ControllerTest
             //Then
             Assert.Equal(0, returnParkinglots.Count);
         }
+
+        [Fact]
+        public async Task Should_DELETE_By_ID_Return_NotFound_Given_Wrong_ID()
+        {
+            //Given
+            var client = GetClient();
+            var noneExistId = "31";
+
+            //When
+            var response = await client.DeleteAsync($"/ParkingLotApi/ParkingLots/{noneExistId}");
+
+            //Then
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
     }
 }
