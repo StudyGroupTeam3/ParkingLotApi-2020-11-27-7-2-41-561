@@ -29,5 +29,12 @@ namespace ParkingLotApi.Services
 
             return parkingLotEntityFound == null ? null : new ParkingLot(parkingLotEntityFound);
         }
+
+        public async Task DeleteParkingLot(int id)
+        {
+            var parkingLotEntity = context.ParkingLots.FirstOrDefaultAsync(lot => lot.Id == id).Result;
+            context.ParkingLots.Remove(parkingLotEntity);
+            await context.SaveChangesAsync();
+        }
     }
 }
