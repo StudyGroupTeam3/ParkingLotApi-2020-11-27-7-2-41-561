@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -54,15 +55,13 @@ namespace ParkingLotApiTest.ControllerTest
             };
             var httpContent = JsonConvert.SerializeObject(parkinglotDto);
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            await client.PostAsync("/ParkingLotApi/ParkingLots", content);
 
             //When
-            var postResponse = await client.PostAsync("/ParkingLotApi/ParkingLots", content);
-            var id = postResponse.Headers.Location.AbsolutePath.Split("/").ToList().LastOrDefault();
-            var getResponse = await client.GetAsync($"/ParkingLotApi/ParkingLots/{id}");
-            var body = await getResponse.Content.ReadAsStringAsync();
-            var actualParkinglot = JsonConvert.DeserializeObject<ParkinglotDTO>(body);
+            var postResponse = client.PostAsync("/ParkingLotApi/ParkingLots", content);
+
             //Then
-            Assert.Equal(parkinglotDto, actualParkinglot);
+            Assert.Equal(1, postResponse.Content);
         }
     }
 }
