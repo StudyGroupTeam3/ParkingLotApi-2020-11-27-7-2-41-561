@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ParkingLotApi.Repository;
+using ParkingLotApi.Services;
 
 namespace ParkingLotApi
 {
@@ -33,6 +34,9 @@ namespace ParkingLotApi
             {
                 options.UseMySql(Configuration.GetConnectionString("Default"));
             });
+
+            // add parkingLot service
+            services.AddScoped<ParkingLotService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
