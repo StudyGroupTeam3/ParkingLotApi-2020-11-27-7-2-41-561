@@ -58,10 +58,10 @@ namespace ParkingLotApiTest.ControllerTest
             await client.PostAsync("/ParkingLotApi/ParkingLots", content);
 
             //When
-            var postResponse = client.PostAsync("/ParkingLotApi/ParkingLots", content);
+            var postResponse = await client.PostAsync("/ParkingLotApi/ParkingLots", content);
 
             //Then
-            Assert.Equal(1, postResponse.Content);
+            Assert.Equal(HttpStatusCode.Conflict, postResponse.StatusCode);
         }
     }
 }

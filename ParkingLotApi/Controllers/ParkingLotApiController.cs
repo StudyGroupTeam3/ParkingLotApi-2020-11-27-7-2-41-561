@@ -22,7 +22,7 @@ namespace ParkingLotApi.Controllers
         [HttpPost("ParkingLots")]
         public async Task<ActionResult<ParkinglotDTO>> CreateParkingLot(ParkinglotDTO parkinglotDto)
         {
-            if (parkinglotDto.Name == null || parkinglotDto.Capacity <= 0 || parkinglotDto.Location == null
+            if (parkinglotDto.Name == null || parkinglotDto.Capacity < 0 || parkinglotDto.Location == null
             || parkinglotDto.Name == string.Empty || parkinglotDto.Location == string.Empty)
             {
                 return BadRequest(new
