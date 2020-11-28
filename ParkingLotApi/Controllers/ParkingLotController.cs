@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Services;
 using System.Linq;
@@ -38,6 +39,14 @@ namespace ParkingLotApi.Controllers
             var lotFound = await service.GetParkingLotById(id);
 
             return lotFound == null ? (ActionResult<ParkingLot>)NotFound("no lot match id") : Ok(lotFound);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<ParkingLot>>> GetAll()
+        {
+            var lots = await service.GetAllParkingLots();
+
+            return Ok(lots);
         }
 
         [HttpDelete("{id}")]

@@ -48,5 +48,20 @@ namespace ParkingLotApiTest.ServiceTest
             // then
             Assert.Equal(0, context.ParkingLots.CountAsync().Result);
         }
+
+        [Fact]
+        public async Task Story1_AC3_Should_get_all_parkingLots()
+        {
+            // given
+            var parkingLot = new ParkingLot("Lot1", 10, "location1");
+
+            // when
+            await service.AddParkingLot(parkingLot);
+            await service.AddParkingLot(parkingLot);
+            await service.AddParkingLot(parkingLot);
+
+            // then
+            Assert.Equal(3, context.ParkingLots.CountAsync().Result);
+        }
     }
 }

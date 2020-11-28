@@ -52,13 +52,33 @@ namespace ParkingLotApiTest.ControllerTest
 
             // when
             var responseAdd = await client.PostAsync("/parkinglots", GetRequestContent(parkingLot));
-            var responseFound = client.DeleteAsync(responseAdd.Headers.Location);
-            var responseNotFound = client.DeleteAsync("error uri");
+            var responseFound = await client.DeleteAsync(responseAdd.Headers.Location);
+            var responseNotFound = await client.DeleteAsync("error uri");
 
             // then
-            Assert.Equal(HttpStatusCode.NoContent, responseFound.Result.StatusCode);
-            Assert.Equal(HttpStatusCode.NotFound, responseNotFound.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, responseFound.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, responseNotFound.StatusCode);
             Assert.Equal(0, context.ParkingLots.CountAsync().Result);
+        }
+
+        [Fact]
+        public async Task Story1_AC3_Should_get_all_parkingLots()
+        {
+            // given
+            var parkingLot1 = new ParkingLot("Lot1", 10, "location1");
+            var parkingLot2 = new ParkingLot("Lot2", 10, "location1");
+            var parkingLot3 = new ParkingLot("Lot3", 10, "location1");
+
+            // when
+            await client.PostAsync("/parkinglots", GetRequestContent(parkingLot1));
+            await client.PostAsync("/parkinglots", GetRequestContent(parkingLot2));
+            await client.PostAsync("/parkinglots", GetRequestContent(parkingLot3));
+
+            var response = await client.GetAsync("/parkinglots");
+
+            // then
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(3, context.ParkingLots.CountAsync().Result);
         }
 
         private StringContent GetRequestContent(ParkingLot parkingLot)

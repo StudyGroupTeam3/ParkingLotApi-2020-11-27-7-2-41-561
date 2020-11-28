@@ -39,7 +39,7 @@ namespace ParkingLotApi.Services
             await context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<ParkingLot>> GetAllParkingLots()
+        public async Task<List<ParkingLot>> GetAllParkingLots()
         {
             var parkingLotEntities = await context.ParkingLots.ToListAsync();
 
