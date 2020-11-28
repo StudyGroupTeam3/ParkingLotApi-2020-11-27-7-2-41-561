@@ -13,7 +13,7 @@ namespace ParkingLotApi.Service
     {
         private readonly ParkingLotContext parkingLotDbContext;
 
-        public ParkingLotApiService(ParkingLotContext parkingLotDbContext) //DbContext was created in the StartUp， This service should get all DB method-
+        public ParkingLotApiService(ParkingLotContext parkingLotDbContext)
         {
             this.parkingLotDbContext = parkingLotDbContext;
         }
