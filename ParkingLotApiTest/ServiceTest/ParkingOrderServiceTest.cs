@@ -36,6 +36,26 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(parkingOrderDto.OrderNumber, foundParkingOrder.OrderNumber);
         }
 
+        [Fact]
+        public async Task Should_get_all_parkingOrders_when_get_parkingOrders_via_parkingLotService()
+        {
+            // given
+            var scope = Factory.Services.CreateScope();
+            var scopedServices = scope.ServiceProvider;
+            ParkingLotContext context = scopedServices.GetRequiredService<ParkingLotContext>();
+            ParkingOrderService parkingOrderService = new ParkingOrderService(context);
+            var parkingOrderDtoList = GenerateParkingOrderDtoList();
+            foreach (var parkingOrderDto in parkingOrderDtoList)
+            {
+                await parkingOrderService.AddParkingOrder(parkingOrderDto);
+            }
+
+            // when
+            var allParkingOrders = await parkingOrderService.GetAllParkingOrders();
+
+            Assert.Equal(5, allParkingOrders.Count());
+        }
+
         private ParkingOrderDto GenerateParkingOrderDto()
         {
             ParkingOrderDto parkingOrderDto = new ParkingOrderDto
@@ -44,6 +64,22 @@ namespace ParkingLotApiTest.ControllerTest
                 PlateNumber = "JA8888",
             };
             return parkingOrderDto;
+        }
+
+        private List<ParkingOrderDto> GenerateParkingOrderDtoList()
+        {
+            List<ParkingOrderDto> parkingOrderDtoList = new List<ParkingOrderDto>();
+            for (var i = 0; i < 5; i++)
+            {
+                ParkingOrderDto parkingOrderDto = new ParkingOrderDto
+                {
+                    ParkingLotName = "No" + i,
+                    PlateNumber = "JA888" + i,
+                };
+                parkingOrderDtoList.Add(parkingOrderDto);
+            }
+
+            return parkingOrderDtoList;
         }
     }
 }

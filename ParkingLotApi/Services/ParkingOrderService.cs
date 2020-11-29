@@ -27,12 +27,10 @@ namespace ParkingLotApi.Services
             return parkingOrderEntity.OrderNumber;
         }
 
-        public async Task<List<ParkingOrderEntity>> GetOrders()
+        public async Task<List<ParkingOrderEntity>> GetAllParkingOrders()
         {
-            //var orderEntities = await parkingLotContext.ParkingOrders.ToListAsync();
-
-            //return orderEntities;
-            return null;
+            var parkingOrderEntities = await parkingLotContext.ParkingOrders.ToListAsync();
+            return parkingOrderEntities;
         }
 
         public async Task<ParkingOrderDto> GetOrderByNumber(string number)
