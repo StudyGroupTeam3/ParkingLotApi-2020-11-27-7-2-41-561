@@ -130,5 +130,31 @@ namespace ParkingLotApiTest.ControllerTest
             //Then
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
+
+        [Fact]
+        public async Task Should_Get_By_Name_Return_Correct_ParkingLot()
+        {
+            //Given
+            var client = GetClient();
+            ParkinglotDTO parkinglotDto = new ParkinglotDTO()
+            {
+                Name = "SuperPark_1",
+                Capacity = 10,
+                Location = "WuDaoKong"
+            };
+
+            //When
+            var httpContent = JsonConvert.SerializeObject(parkinglotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            await client.PostAsync("/ParkingLotApi/ParkingLots", content);
+
+            //When
+            var getResponse = await client.GetAsync($"/ParkingLotApi/ParkingLots? name = SuperPark_1");
+            var body = await getResponse.Content.ReadAsStringAsync();
+            var actualDto = JsonConvert.DeserializeObject<List<ParkinglotDTO>>(body);
+
+            //Then
+            Assert.Equal(parkinglotDto, actualDto[0]);
+        }
     }
 }
