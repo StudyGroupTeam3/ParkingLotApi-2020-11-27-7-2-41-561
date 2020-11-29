@@ -35,7 +35,7 @@ namespace ParkingLotApi.Services
         {
             var orderEntity = await context.Orders.FirstOrDefaultAsync(order => order.OrderNumber == number);
 
-            return new Order(orderEntity);
+            return orderEntity == null ? null : new Order(orderEntity);
         }
 
         public async Task UpdateOrder(int number, OrderUpdateModel data)
@@ -44,6 +44,16 @@ namespace ParkingLotApi.Services
             orderEntity.Status = data.Status;
             orderEntity.CloseTime = data.CloseTime;
             await context.SaveChangesAsync();
+        }
+
+        public async Task<List<OrderEntity>> GetAllOrderEntities()
+        {
+            return await context.Orders.ToListAsync();
+        }
+
+        public async Task<OrderEntity> GetOrderEntityByNumber(int number)
+        {
+            return await context.Orders.FirstOrDefaultAsync(order => order.OrderNumber == number);
         }
     }
 }

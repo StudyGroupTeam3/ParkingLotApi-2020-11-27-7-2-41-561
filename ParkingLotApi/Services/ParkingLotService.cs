@@ -35,7 +35,9 @@ namespace ParkingLotApi.Services
 
         public async Task DeleteParkingLot(string name)
         {
-            var parkingLotEntity = context.ParkingLots.FirstOrDefaultAsync(lot => lot.Name == name).Result;
+            var parkingLotEntity = await context.ParkingLots
+                .Include(lot => lot.Orders)
+                .FirstOrDefaultAsync(lot => lot.Name == name);
             context.ParkingLots.Remove(parkingLotEntity);
             await context.SaveChangesAsync();
         }
@@ -52,7 +54,7 @@ namespace ParkingLotApi.Services
             var lotFound = await context.ParkingLots.Include(lot => lot.Orders)
                 .FirstOrDefaultAsync(lot => lot.Name == name);
 
-            return lotFound.Capacity - lotFound.Orders.Count;
+            return lotFound.Capacity - lotFound.Orders.Count(order => order.Status == Status.Open);
         }
 
         public async Task<List<ParkingLot>> GetAllParkingLots(int page)
@@ -64,7 +66,8 @@ namespace ParkingLotApi.Services
                 .Select(x => x.Select(v => v.Value).ToList())
                 .ToList();
 
-            return lotLists[page - 1].Select(lot => new ParkingLot(lot)).ToList();
+            var pageTotalCounts = lotLists.Count;
+            return page > pageTotalCounts ? new List<ParkingLot>() : lotLists[page - 1].Select(lot => new ParkingLot(lot)).ToList();
         }
 
         public async Task UpdateParkingLot(string name, ParkingLotUpdateModel data)

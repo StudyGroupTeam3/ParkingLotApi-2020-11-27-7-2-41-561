@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Entities;
+using ParkingLotApi.Models;
 using ParkingLotApi.Services;
 using System.Linq;
 using System.Threading.Tasks;
-using ParkingLotApi.Models;
 
 namespace ParkingLotApi.Controllers
 {
@@ -24,10 +24,15 @@ namespace ParkingLotApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Order>> Add(OrderRequest order)
         {
+            var lotFound = await parkingLotService.GetParkingLotByName(order.ParkingLotName);
+            if (lotFound == null)
+            {
+                return BadRequest("no parkingLot match the name");
+            }
+
             var orderFound = orderService.GetOrders().Result
                 .FirstOrDefault(orderEntity => orderEntity.PlateNumber == order.PlateNumber
                                                && orderEntity.Status == Status.Open);
-
             if (orderFound != null)
             {
                 return BadRequest("car in the lot");
@@ -60,6 +65,12 @@ namespace ParkingLotApi.Controllers
             if (orderFound == null)
             {
                 return NotFound("unrecognized order number");
+            }
+
+            var orderEntity = await orderService.GetOrderEntityByNumber(number);
+            if (orderEntity.Status == Status.Close)
+            {
+                return BadRequest("car has leaved");
             }
 
             await orderService.UpdateOrder(number, data);

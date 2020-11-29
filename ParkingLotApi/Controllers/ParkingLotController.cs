@@ -5,6 +5,7 @@ using ParkingLotApi.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ParkingLotApi.Entities;
 
 namespace ParkingLotApi.Controllers
 {
@@ -13,10 +14,12 @@ namespace ParkingLotApi.Controllers
     public class ParkingLotController : ControllerBase
     {
         private readonly ParkingLotService service;
+        private readonly OrderService orderService;
 
-        public ParkingLotController(ParkingLotService service)
+        public ParkingLotController(ParkingLotService service, OrderService orderService)
         {
             this.service = service;
+            this.orderService = orderService;
         }
 
         [HttpPost]
@@ -64,6 +67,14 @@ namespace ParkingLotApi.Controllers
             if (lotFound == null)
             {
                 return NotFound("no lot match name");
+            }
+
+            var orderOpen = orderService.GetAllOrderEntities().Result
+                .FirstOrDefault(order => order.ParkingLotName == name && order.Status == Status.Open);
+
+            if (orderOpen != null)
+            {
+                return BadRequest("some car still in the lot");
             }
 
             await service.DeleteParkingLot(name);
