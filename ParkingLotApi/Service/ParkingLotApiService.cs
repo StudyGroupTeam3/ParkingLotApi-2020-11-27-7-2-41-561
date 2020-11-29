@@ -71,5 +71,10 @@ namespace ParkingLotApi.Service
                 (parkingLot => parkingLot.Name == name);
             return new ParkinglotDTO(foundParkingLot);
         }
+
+        public async Task<int> ChangeCapacity(UpdateModel updateModel)
+        {
+            return 40;
+        }
     }
 }

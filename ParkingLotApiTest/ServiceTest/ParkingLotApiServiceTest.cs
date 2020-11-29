@@ -87,6 +87,28 @@ namespace ParkingLotApiTest.ServiceTest
             Assert.Equal(expectedDto, actualDto);
         }
 
+        [Fact]
+        public async Task Should_Patch_Can_Change_Capacity_Success_Via_ParkingLotService()
+        {
+            //Given
+            var context = GetParkingLotDbContext();
+            ParkingLotApiService parkingLotApiService = new ParkingLotApiService(context);
+            List<ParkinglotDTO> parkingLotDtos = GenerateSomeParkinglots();
+            foreach (var parkingLotDto in parkingLotDtos)
+            {
+                await parkingLotApiService.AddParkingLotAsnyc(parkingLotDto);
+            }
+
+            UpdateModel updateModel = new UpdateModel("SuperPark_1", 30);
+            var expectedCapacity = updateModel.Capacity;
+
+            //When
+            var actualCapacity = await parkingLotApiService.ChangeCapacity(updateModel);
+
+            //Then
+            Assert.Equal(expectedCapacity, actualCapacity);
+        }
+
         private ParkingLotContext GetParkingLotDbContext()
         {
             var scope = Factory.Services.CreateScope();
