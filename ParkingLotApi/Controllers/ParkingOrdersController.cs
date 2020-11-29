@@ -60,7 +60,14 @@ namespace ParkingLotApi.Controllers
         [HttpPatch("{parkingOrderNumber}")]
         public async Task<ActionResult<ParkingOrderDto>> UpdateParkingLotCapacity(string parkingOrderNumber, UpdateParkingOrderDto updateParkingOrderDto)
         {
-            return Ok();
+            var foundParkingOrder = await parkingOrderService.GetParkingOrderByOrderNumber(parkingOrderNumber);
+            if (foundParkingOrder != null)
+            {
+                var changedParkingOrder = await parkingOrderService.UpdateParkingOrder(parkingOrderNumber, updateParkingOrderDto);
+                return Ok(changedParkingOrder);
+            }
+
+            return NotFound("parking order not found");
         }
     }
 }
