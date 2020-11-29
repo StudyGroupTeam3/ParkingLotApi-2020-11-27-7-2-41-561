@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Repository;
@@ -52,11 +53,27 @@ namespace ParkingLotApi.Controllers
             return CreatedAtAction(nameof(GetById), new { id = id }, parkingLotDto);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ParkingLotDto>>> List()
+        {
+            var parkingLotDtos = await this.parkingLotService.GetAll();
+
+            return Ok(parkingLotDtos);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<ParkingLotDto>> GetById(int id)
         {
             var parkingLotDto = await this.parkingLotService.GetById(id);
             return Ok(parkingLotDto);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            await parkingLotService.DeleteParkingLot(id);
+
+            return NoContent();
         }
     }
 }
