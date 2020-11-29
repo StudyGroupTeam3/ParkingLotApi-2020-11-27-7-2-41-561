@@ -53,14 +53,6 @@ namespace ParkingLotApi.Controllers
             return CreatedAtAction(nameof(GetById), new { id = id }, parkingLotDto);
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<ParkingLotDto>>> List()
-        //{
-        //    var parkingLotDtos = await this.parkingLotService.GetAll();
-
-        //    return Ok(parkingLotDtos);
-        //}
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ParkingLotDto>>> ListByPages([FromQuery] int startPage = 1, [FromQuery] int pageSize = 15)
         {

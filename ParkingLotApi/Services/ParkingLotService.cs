@@ -33,13 +33,6 @@ namespace ParkingLotApi.Services
             return new ParkingLotDto(foundParkingLotEntity);
         }
 
-        //public async Task<List<ParkingLotDto>> GetAll()
-        //{
-        //    var parkingLots = await this.parkingLotContext.ParkingLot
-        //        .ToListAsync();
-        //    return parkingLots.Select(companyEntity => new ParkingLotDto(companyEntity)).ToList();
-        //}
-
         public async Task<List<ParkingLotDto>> GetAllByPages(int startPage, int pageSize)
         {
             int skip = (startPage - 1) * pageSize;

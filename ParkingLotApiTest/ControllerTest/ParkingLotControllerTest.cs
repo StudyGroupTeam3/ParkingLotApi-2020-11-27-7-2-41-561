@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
@@ -16,17 +17,16 @@ using Xunit;
 namespace ParkingLotApiTest.ControllerTest
 {
     [Collection("TestController")]
-    public class ParkingLotControllerTest : TestBase
+    public class ParkingLotServiceTest : TestBase
     {
         private readonly HttpClient client;
-        //private readonly StringContent content;
-        //private readonly ParkingLotService parkingLotService;
-        public ParkingLotControllerTest(CustomWebApplicationFactory<Startup> factory) : base(factory)
+        private readonly ParkingLotContext context;
+        private readonly ParkingLotService parkingLotService;
+        public ParkingLotServiceTest(CustomWebApplicationFactory<Startup> factory) : base(factory)
         {
             client = GetClient();
-            client.DeleteAsync("/Companies");
-            //context = Factory.Services.CreateScope().ServiceProvider.GetRequiredService<ParkingLotContext>();
-            //parkingLotService = new ParkingLotService(context);
+            context = Factory.Services.CreateScope().ServiceProvider.GetRequiredService<ParkingLotContext>();
+            parkingLotService = new ParkingLotService(context);
         }
 
         [Fact]
@@ -41,7 +41,15 @@ namespace ParkingLotApiTest.ControllerTest
             string httpContent = JsonConvert.SerializeObject(parkingLotDto);
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
             var response = await client.PostAsync("/parkinglots", content);
+
+            var allParkingLotsResponse = await client.GetAsync("/parkinglots");
+            var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
+            var returnParkingLots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(body);
+
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.Single(returnParkingLots);
+            Assert.Equal(parkingLotDto, returnParkingLots[0]);
+            Assert.Equal(1, context.ParkingLot.Count());
         }
 
         [Fact]
@@ -57,6 +65,7 @@ namespace ParkingLotApiTest.ControllerTest
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
             var response = await client.PostAsync("/parkinglots", content);
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            Assert.Equal(0, context.ParkingLot.Count());
         }
 
         [Fact]
@@ -81,42 +90,40 @@ namespace ParkingLotApiTest.ControllerTest
             await client.PostAsync("/parkinglots", content1);
             var response = await client.PostAsync("/parkinglots", content2);
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            Assert.Equal(1, context.ParkingLot.Count());
         }
-
-        //[Fact]
-        //public async Task Should_get_all_parkingLots_when_list_parkingLots()
-        //{
-        //    ParkingLotDto parkingLotDto = new ParkingLotDto()
-        //    {
-        //        Name = "NO.3",
-        //        Capacity = 50,
-        //        Location = "BeiJingSouthRailWayStationParkingLot"
-        //    };
-        //    string httpContent = JsonConvert.SerializeObject(parkingLotDto);
-        //    StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-        //    await client.PostAsync("/parkinglots", content);
-        //    var allParkingLotsResponse = await client.GetAsync("/parkinglots");
-        //    var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
-        //    var returnParkingLots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(body);
-
-        //    Assert.Equal(HttpStatusCode.OK, allParkingLotsResponse.StatusCode);
-        //}
 
         [Fact]
         public async Task Should_return_204_when_delete_parkingLot_success()
         {
-            ParkingLotDto parkingLotDto = new ParkingLotDto()
+            ParkingLotDto parkingLotDto1 = new ParkingLotDto()
+            {
+                Name = "NO.1",
+                Capacity = 50,
+                Location = "BeiJingSouthRailWayStationParkingLot"
+            };
+            ParkingLotDto parkingLotDto2 = new ParkingLotDto()
             {
                 Name = "NO.2",
                 Capacity = 50,
                 Location = "BeiJingSouthRailWayStationParkingLot"
             };
-            string httpContent = JsonConvert.SerializeObject(parkingLotDto);
-            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var responsePost = await client.PostAsync("/parkinglots", content);
-            var response = await client.DeleteAsync(responsePost.Headers.Location);
+            string httpContent1 = JsonConvert.SerializeObject(parkingLotDto1);
+            StringContent content1 = new StringContent(httpContent1, Encoding.UTF8, MediaTypeNames.Application.Json);
+            string httpContent2 = JsonConvert.SerializeObject(parkingLotDto2);
+            StringContent content2 = new StringContent(httpContent2, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var responsePost1 = await client.PostAsync("/parkinglots", content1);
+            var responsePost2 = await client.PostAsync("/parkinglots", content2);
+            var response1 = await client.DeleteAsync(responsePost1.Headers.Location);
 
-            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            var allParkingLotsResponse = await client.GetAsync("/parkinglots");
+            var body = await allParkingLotsResponse.Content.ReadAsStringAsync();
+            var returnParkingLots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(body);
+
+            Assert.Equal(HttpStatusCode.NoContent, response1.StatusCode);
+            Assert.Single(returnParkingLots);
+            Assert.Equal(parkingLotDto2, returnParkingLots[0]);
+            Assert.Equal(1, context.ParkingLot.Count());
         }
 
         [Fact]
@@ -136,6 +143,8 @@ namespace ParkingLotApiTest.ControllerTest
             var returnParkingLots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(body);
 
             Assert.Equal(HttpStatusCode.OK, allParkingLotsResponse.StatusCode);
+            Assert.Equal(15, returnParkingLots.Count);
+            Assert.Equal(15, context.ParkingLot.Count());
         }
 
         [Fact]
@@ -161,7 +170,11 @@ namespace ParkingLotApiTest.ControllerTest
             var responsePost2 = await client.PostAsync("/parkinglots", content2);
             var response = await client.GetAsync(responsePost2.Headers.Location);
 
+            var body = await response.Content.ReadAsStringAsync();
+            var returnParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(body);
+
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(parkingLotDto2, returnParkingLot);
         }
 
         [Fact]
@@ -188,8 +201,13 @@ namespace ParkingLotApiTest.ControllerTest
             string httpContentPatch = JsonConvert.SerializeObject(updateParkingLotDto);
             StringContent contentPatch = new StringContent(httpContentPatch, Encoding.UTF8, MediaTypeNames.Application.Json);
             var response = await client.PatchAsync(responsePost.Headers.Location, contentPatch);
+
+            var body = await response.Content.ReadAsStringAsync();
+            var returnParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(body);
             // then
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(updateParkingLotDto.Capacity, returnParkingLot.Capacity);
+            Assert.Equal(1, context.ParkingLot.Count());
         }
 
         private ParkingLotDto GetParkingLotDto(string name)
