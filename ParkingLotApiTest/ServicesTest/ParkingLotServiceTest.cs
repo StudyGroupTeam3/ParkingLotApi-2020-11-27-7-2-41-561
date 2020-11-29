@@ -15,17 +15,19 @@ namespace ParkingLotApiTest
     [Collection("ParkingLotContext")]
     public class ParkingLotServiceTest : TestBase
     {
+        private ParkingLotContext parkingLotContext;
+
         public ParkingLotServiceTest(CustomWebApplicationFactory<Startup> factory) : base(factory)
         {
+            var scope = Factory.Services.CreateScope();
+            var scopedServices = scope.ServiceProvider;
+            parkingLotContext = scopedServices.GetRequiredService<ParkingLotContext>();
         }
 
         [Fact]
         public async Task Should_add_new_parking_lot_into_database_and_return_id_when_AddParkingLot()
         {
             // given
-            var scope = Factory.Services.CreateScope();
-            var scopedServices = scope.ServiceProvider;
-            var parkingLotContext = scopedServices.GetRequiredService<ParkingLotContext>();
             var parkingLotService = new ParkingLotService(parkingLotContext);
 
             ParkingLotDto parkingLotDto = new ParkingLotDto
@@ -47,9 +49,6 @@ namespace ParkingLotApiTest
         public async Task Should_return_list_of_parking_lot_dtos_in_specified_page_range_when_GetParkingLotsByPage()
         {
             // given
-            var scope = Factory.Services.CreateScope();
-            var scopedServices = scope.ServiceProvider;
-            var parkingLotContext = scopedServices.GetRequiredService<ParkingLotContext>();
             parkingLotContext.Database.EnsureDeleted();
             parkingLotContext.Database.EnsureCreated();
             var parkingLotService = new ParkingLotService(parkingLotContext);
