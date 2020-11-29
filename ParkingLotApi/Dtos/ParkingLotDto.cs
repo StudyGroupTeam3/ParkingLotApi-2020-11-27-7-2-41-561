@@ -18,9 +18,8 @@ namespace ParkingLotApi.Dtos
             {
                 this.Name = parkingLotEntity.Name;
                 this.Capacity = parkingLotEntity.Capacity;
-                this.Location = parkingLotEntity?.Location;
+                this.Location = parkingLotEntity.Location;
             }
-
             else
             {
                 this.Name = "default";
