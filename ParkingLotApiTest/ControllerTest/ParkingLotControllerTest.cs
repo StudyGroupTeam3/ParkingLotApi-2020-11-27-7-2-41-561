@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -49,6 +50,25 @@ namespace ParkingLotApiTest.ControllerTest
             int parkingLotId = int.Parse(await response.Content.ReadAsStringAsync());
             var actualParkingLotDto = new ParkingLotDto(parkingLotContext.ParkingLots.Find(parkingLotId));
             Assert.Equal(parkingLotDto, actualParkingLotDto);
+        }
+
+        [Fact]
+        public async Task Should_return_400_if_not_all_required_property_is_provided_when_POST_AddParkingLot()
+        {
+            // given
+            ParkingLotDto parkingLotDto = new ParkingLotDto
+            {
+                Name = "NO.1",
+                Capacity = 10
+            };
+
+            // when
+            var httpContent = JsonConvert.SerializeObject(parkingLotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var response = await client.PostAsync("/parkinglots", content);
+
+            // then
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]
