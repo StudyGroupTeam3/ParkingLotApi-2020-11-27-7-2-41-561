@@ -4,6 +4,7 @@ using ParkingLotApi.Entities;
 using ParkingLotApi.Services;
 using System.Linq;
 using System.Threading.Tasks;
+using ParkingLotApi.Models;
 
 namespace ParkingLotApi.Controllers
 {
@@ -49,6 +50,21 @@ namespace ParkingLotApi.Controllers
             var orderFound = await orderService.GetOrderByNumber(number);
 
             return orderFound == null ? (ActionResult<Order>)NotFound("unrecognized order number") : Ok(orderFound);
+        }
+
+        [HttpPatch("{number}")]
+        public async Task<IActionResult> Patch(int number, OrderUpdateModel data)
+        {
+            var orderFound = await orderService.GetOrderByNumber(number);
+
+            if (orderFound == null)
+            {
+                return NotFound("unrecognized order number");
+            }
+
+            await orderService.UpdateOrder(number, data);
+
+            return NoContent();
         }
     }
 }

@@ -4,6 +4,7 @@ using ParkingLotApi.Entities;
 using ParkingLotApi.Repository;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ParkingLotApi.Models;
 
 namespace ParkingLotApi.Services
 {
@@ -43,6 +44,14 @@ namespace ParkingLotApi.Services
             var orderEntity = await context.Orders.FirstOrDefaultAsync(order => order.OrderNumber == number);
 
             return new Order(orderEntity);
+        }
+
+        public async Task UpdateOrder(int number, OrderUpdateModel data)
+        {
+            var orderEntity = context.Orders.FirstOrDefaultAsync(order => order.OrderNumber == number).Result;
+            orderEntity.Status = data.Status;
+            orderEntity.CloseTime = data.CloseTime;
+            await context.SaveChangesAsync();
         }
     }
 }

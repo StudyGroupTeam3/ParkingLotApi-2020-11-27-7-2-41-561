@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using ParkingLotApi;
@@ -9,6 +10,8 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
+using ParkingLotApi.Entities;
+using ParkingLotApi.Models;
 using Xunit;
 
 namespace ParkingLotApiTest.ControllerTest
@@ -48,11 +51,34 @@ namespace ParkingLotApiTest.ControllerTest
             // then
             Assert.Equal(orderReturn, new Order(context.Orders.FirstOrDefaultAsync().Result));
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-            Assert.Contains("/orders/1", response.Headers.Location.AbsoluteUri);
+            Assert.Contains($"/orders/{orderReturn.OrderNumber}", response.Headers.Location.AbsoluteUri);
 
             Assert.Equal(HttpStatusCode.BadRequest, responseOrderNotClosed.StatusCode);
 
             Assert.Equal(HttpStatusCode.BadRequest, responseFullLot.StatusCode);
+        }
+
+        [Fact]
+        public async Task Story2_AC2_Should_update_order()
+        {
+            // given
+            var parkingLot = new ParkingLot("Lot1", 10, "location1");
+            var order = new OrderRequest("Lot1", "JA00001");
+            var closeTime = DateTime.Now;
+            var updateModel = new OrderUpdateModel(closeTime, Status.Close);
+
+            // when
+            await client.PostAsync("/parkinglots", GetRequestContent(parkingLot));
+            var responseAddOrder = await client.PostAsync("/orders", GetRequestContent(order));
+            var response = await client.PatchAsync(responseAddOrder.Headers.Location, GetRequestContent(updateModel));
+            var responseNotFound = await client.PatchAsync("error uri", GetRequestContent(updateModel));
+
+            // then
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.Equal(updateModel.Status, context.Orders.FirstOrDefaultAsync().Result.Status);
+            Assert.Equal(closeTime, context.Orders.FirstOrDefaultAsync().Result.CloseTime);
+
+            Assert.Equal(HttpStatusCode.NotFound, responseNotFound.StatusCode);
         }
 
         private async Task<T> GetResponseContent<T>(HttpResponseMessage response)
