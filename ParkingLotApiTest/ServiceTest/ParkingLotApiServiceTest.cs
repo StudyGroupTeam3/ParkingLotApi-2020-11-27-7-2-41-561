@@ -109,6 +109,34 @@ namespace ParkingLotApiTest.ServiceTest
             Assert.Equal(expectedCapacity, actualCapacity);
         }
 
+        [Fact]
+        public async Task Should_CreateOrder_Success_Via_ParkingLotService()
+        {
+            //Given
+            var context = GetParkingLotDbContext();
+            ParkingLotApiService parkingLotApiService = new ParkingLotApiService(context);
+            List<ParkinglotDTO> parkingLotDtos = GenerateSomeParkinglots();
+            foreach (var parkingLotDto in parkingLotDtos)
+            {
+                await parkingLotApiService.AddParkingLotAsnyc(parkingLotDto);
+            }
+
+            OrderDto newOrderDto = new OrderDto()
+            {
+                OrderNumber = Guid.NewGuid(),
+                NameOfParkingLot = "SuperPark_1",
+                PlateNumber = "RJ_963824",
+                CreationTime = DateTime.Now,
+            };
+
+            //When
+            var newOrderId = await parkingLotApiService.CreateOrder(newOrderDto);
+            var actualOrderDto = await parkingLotApiService.GetOrderById(newOrderId);
+
+            //Then
+            Assert.Equal(newOrderDto, actualOrderDto);
+        }
+
         private ParkingLotContext GetParkingLotDbContext()
         {
             var scope = Factory.Services.CreateScope();

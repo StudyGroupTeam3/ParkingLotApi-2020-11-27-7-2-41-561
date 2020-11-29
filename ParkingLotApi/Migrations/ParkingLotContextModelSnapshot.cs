@@ -48,7 +48,7 @@ namespace ParkingLotApi.Migrations
 
                     b.HasIndex("ParkinglotEntityID");
 
-                    b.ToTable("OrderEntity");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("ParkingLotApi.Data_Entity.ParkinglotEntity", b =>
