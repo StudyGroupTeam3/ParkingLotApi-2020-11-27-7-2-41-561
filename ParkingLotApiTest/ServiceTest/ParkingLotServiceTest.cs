@@ -51,7 +51,7 @@ namespace ParkingLotApiTest.ControllerTest
             var parkingLotName = await parkingLotService.AddParkingLot(parkingLotDto);
             var foundParkingLot = await context.ParkingLots.FirstOrDefaultAsync(parkingLotEntity => parkingLotEntity.Name == parkingLotName);
 
-            Assert.Equal(3, context.ParkingLots.Count());
+            Assert.Equal(4, context.ParkingLots.Count());
 
             var parkingLotNameTwo = await parkingLotService.AddParkingLot(parkingLotDto);
             Assert.Null(parkingLotNameTwo);
@@ -73,6 +73,25 @@ namespace ParkingLotApiTest.ControllerTest
 
             Assert.Equal(1, context.ParkingLots.Count());
             Assert.Equal(parkingLotDto.Name, foundParkingLot.Name);
+        }
+
+        [Fact]
+        public async Task Should_update_parkingLot_capacity_when_update_parkingLot_by_name_via_parkingLotService()
+        {
+            var scope = Factory.Services.CreateScope();
+            var scopedServices = scope.ServiceProvider;
+
+            ParkingLotContext context = scopedServices.GetRequiredService<ParkingLotContext>();
+            var parkingLotCapacityUpdateDto = new UpdateParkingLotCapacityDto(10);
+
+            ParkingLotService parkingLotService = new ParkingLotService(context);
+
+            var parkingLotDto = GenerateParkingLotDto();
+            var parkingLotName = await parkingLotService.AddParkingLot(parkingLotDto);
+
+            var foundParkingLot = await parkingLotService.UpdateParkingLotCapacity(parkingLotName, parkingLotCapacityUpdateDto);
+
+            Assert.Equal(parkingLotCapacityUpdateDto.Capacity, foundParkingLot.Capacity);
         }
 
         [Fact]
