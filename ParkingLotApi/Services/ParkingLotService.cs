@@ -39,7 +39,12 @@ namespace ParkingLotApi.Services
         {
             var foundParkingLot = await parkingLotContext.ParkingLots.Include(parkingLot => parkingLot.ParkingOrders)
                 .FirstOrDefaultAsync(parkingLot => parkingLot.Name == parkingLotName);
-            return foundParkingLot.ParkingOrders.Count;
+            if (foundParkingLot?.ParkingOrders != null)
+            {
+                return foundParkingLot.ParkingOrders.Count;
+            }
+
+            return -1;
         }
 
         public async Task<string> AddParkingLot(ParkingLotDto parkingLotDto)

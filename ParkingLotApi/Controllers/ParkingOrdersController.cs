@@ -35,6 +35,11 @@ namespace ParkingLotApi.Controllers
             var parkingLot = await parkingLotService.GetParkingLotByName(parkingOrderDto.ParkingLotName);
             var capacity = parkingLot.Capacity;
             var occupies = await parkingLotService.GetParkingLotCapacityByName(parkingOrderDto.ParkingLotName);
+            if (occupies == -1)
+            {
+                return BadRequest("parking lot not found");
+            }
+
             if (capacity == occupies)
             {
                 return BadRequest("parking lot is full");
