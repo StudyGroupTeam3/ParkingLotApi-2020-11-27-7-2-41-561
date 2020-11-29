@@ -95,6 +95,22 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
+        public async Task Should_not_update_parkingLot_capacity_when_update_parkingLot_do_not_exist_via_parkingLotService()
+        {
+            var scope = Factory.Services.CreateScope();
+            var scopedServices = scope.ServiceProvider;
+
+            ParkingLotContext context = scopedServices.GetRequiredService<ParkingLotContext>();
+            var parkingLotCapacityUpdateDto = new UpdateParkingLotCapacityDto(10);
+
+            ParkingLotService parkingLotService = new ParkingLotService(context);
+
+            var foundParkingLot = await parkingLotService.UpdateParkingLotCapacity("notExistParkingLotName", parkingLotCapacityUpdateDto);
+
+            Assert.Null(foundParkingLot);
+        }
+
+        [Fact]
         public async Task Should_delete_parkingLot_when_delete_parkingLot_by_name_via_parkingLotService()
         {
             var scope = Factory.Services.CreateScope();
