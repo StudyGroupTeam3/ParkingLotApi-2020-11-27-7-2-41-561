@@ -11,5 +11,6 @@ namespace ParkingLotApi.Repository
         }
 
         public DbSet<ParkingLotEntity> ParkingLots { get; set; }
+        public DbSet<ParkingOrderEntity> ParkingOrders { get; set; }
     }
 }
