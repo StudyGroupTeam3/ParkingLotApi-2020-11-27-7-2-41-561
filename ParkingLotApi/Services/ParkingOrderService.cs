@@ -36,19 +36,32 @@ namespace ParkingLotApi.Services
         public async Task<ParkingOrderDto> GetParkingOrderByOrderNumber(string orderNumber)
         {
             var parkingOrderEntity = await parkingLotContext.ParkingOrders.FirstOrDefaultAsync(parkingOrder => parkingOrder.OrderNumber == orderNumber);
-            var parkingOrder = new ParkingOrderDto(parkingOrderEntity)
+            if (parkingOrderEntity != null)
             {
-                OrderNumber = parkingOrderEntity.OrderNumber,
-            };
-            return parkingOrder;
+                return new ParkingOrderDto(parkingOrderEntity)
+                {
+                    OrderNumber = parkingOrderEntity.OrderNumber,
+                };
+            }
+
+            return null;
         }
 
-        public async Task UpdateOrder(string number, UpdateParkingOrderDto data)
+        public async Task<ParkingOrderDto> UpdateParkingOrder(string orderNumber, UpdateParkingOrderDto updateParkingOrderDto)
         {
-            //var orderEntity = parkingLotContext.ParkingOrders.FirstOrDefaultAsync(order => order.OrderNumber == number).Result;
-            //orderEntity.OrderStatus = data.OrderStatus;
-            //orderEntity.CloseTime = data.CloseTime;
-            //await parkingLotContext.SaveChangesAsync();
+            var foundOrderEntity = parkingLotContext.ParkingOrders.FirstOrDefaultAsync(order => order.OrderNumber == orderNumber).Result;
+            if (foundOrderEntity != null)
+            {
+                foundOrderEntity.OrderStatus = updateParkingOrderDto.OrderStatus;
+                foundOrderEntity.CloseTime = updateParkingOrderDto.CloseTime;
+                await parkingLotContext.SaveChangesAsync();
+                return new ParkingOrderDto(foundOrderEntity)
+                {
+                    OrderNumber = foundOrderEntity.OrderNumber,
+                };
+            }
+
+            return null;
         }
     }
 }

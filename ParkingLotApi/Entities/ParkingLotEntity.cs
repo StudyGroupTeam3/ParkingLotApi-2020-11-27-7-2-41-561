@@ -26,6 +26,6 @@ namespace ParkingLotApi.Entities
         public int? Capacity { get; set; }
         public string Location { get; set; }
         [ForeignKey("ParkingLotName")]
-        public List<ParkingOrderEntity> Orders { get; set; }
+        public List<ParkingOrderEntity> ParkingOrders { get; set; }
     }
 }

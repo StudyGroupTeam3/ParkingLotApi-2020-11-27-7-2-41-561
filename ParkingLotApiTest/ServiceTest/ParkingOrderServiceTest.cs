@@ -79,6 +79,30 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(parkingOrderDtoList[0], parkingOrder);
         }
 
+        [Fact]
+        public async Task Should_update_parkingOrder_when_update_parkingOrder_via_parkingOrderService()
+        {
+            // given
+            var scope = Factory.Services.CreateScope();
+            var scopedServices = scope.ServiceProvider;
+            ParkingLotContext context = scopedServices.GetRequiredService<ParkingLotContext>();
+            ParkingOrderService parkingOrderService = new ParkingOrderService(context);
+            var parkingOrderDtoList = GenerateParkingOrderDtoList();
+            foreach (var parkingOrderDto in parkingOrderDtoList)
+            {
+                await parkingOrderService.AddParkingOrder(parkingOrderDto);
+            }
+
+            UpdateParkingOrderDto updateParkingOrderDto = new UpdateParkingOrderDto("closed");
+
+            // when
+            var changedParkingOrder = await parkingOrderService.UpdateParkingOrder(parkingOrderDtoList[0].OrderNumber, updateParkingOrderDto);
+
+            // then
+            Assert.Equal(updateParkingOrderDto.CloseTime, changedParkingOrder.CloseTime);
+            Assert.Equal(updateParkingOrderDto.OrderStatus, changedParkingOrder.OrderStatus);
+        }
+
         private ParkingOrderDto GenerateParkingOrderDto()
         {
             ParkingOrderDto parkingOrderDto = new ParkingOrderDto
