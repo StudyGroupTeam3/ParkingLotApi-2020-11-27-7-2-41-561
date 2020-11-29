@@ -72,6 +72,22 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(parkingLotDto.Name, responseParkingLot.Name);
         }
 
+        [Fact]
+        public async Task Should_get_no_parkingLot_when_get_parkingLot_not_exist()
+        {
+            // given
+            var client = GetClient();
+            var parkingLotName = "ha";
+
+            // when
+            var response = await client.GetAsync($"/ParkingLots/{parkingLotName}");
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var responseParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(responseBody);
+
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
+            Assert.Null(responseParkingLot.Name);
+        }
+
         private static ParkingLotDto GenerateParkingLotDto()
         {
             ParkingLotDto parkingLotDto = new ParkingLotDto
