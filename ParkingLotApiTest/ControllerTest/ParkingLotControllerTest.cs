@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -7,6 +8,7 @@ using Newtonsoft.Json;
 using ParkingLotApi;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Repository;
+using ParkingLotApi.Services;
 using Xunit;
 
 namespace ParkingLotApiTest.ControllerTest
@@ -45,6 +47,52 @@ namespace ParkingLotApiTest.ControllerTest
             int parkingLotId = int.Parse(await response.Content.ReadAsStringAsync());
             var actualParkingLotDto = new ParkingLotDto(parkingLotContext.ParkingLots.Find(parkingLotId));
             Assert.Equal(parkingLotDto, actualParkingLotDto);
+        }
+
+        [Fact]
+        public async Task Should_return_list_of_parking_lot_dtos_in_specified_page_range_when_GET_GetParkingLotsByPages()
+        {
+            // given
+            var client = GetClient();
+
+            var scope = Factory.Services.CreateScope();
+            var scopedServices = scope.ServiceProvider;
+            var parkingLotContext = scopedServices.GetRequiredService<ParkingLotContext>();
+            parkingLotContext.Database.EnsureDeleted();
+            parkingLotContext.Database.EnsureCreated();
+            var parkingLotService = new ParkingLotService(parkingLotContext);
+
+            ParkingLotDto parkingLotDto1 = new ParkingLotDto
+            {
+                Name = "NO.1",
+                Capacity = 10,
+                Location = "Area1"
+            };
+            await parkingLotService.AddParkingLot(parkingLotDto1);
+
+            ParkingLotDto parkingLotDto2 = new ParkingLotDto
+            {
+                Name = "NO.2",
+                Capacity = 10,
+                Location = "Area2"
+            };
+            await parkingLotService.AddParkingLot(parkingLotDto2);
+
+            ParkingLotDto parkingLotDto3 = new ParkingLotDto
+            {
+                Name = "NO.3",
+                Capacity = 10,
+                Location = "Area3"
+            };
+            await parkingLotService.AddParkingLot(parkingLotDto3);
+
+            // when
+            var response = await client.GetAsync("/parkinglots?pageIndex=2&pageSize=2");
+            response.EnsureSuccessStatusCode();
+
+            // then
+            var actualParkingLotDtos = JsonConvert.DeserializeObject<List<ParkingLotDto>>(await response.Content.ReadAsStringAsync());
+            Assert.Equal(new List<ParkingLotDto>() { parkingLotDto3 }, actualParkingLotDtos);
         }
     }
 }

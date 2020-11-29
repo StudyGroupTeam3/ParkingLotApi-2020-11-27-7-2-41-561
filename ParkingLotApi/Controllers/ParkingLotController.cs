@@ -26,5 +26,11 @@ namespace ParkingLotApi.Controllers
             int parkingLotId = await this.parkingLotService.AddParkingLot(parkingLotDto);
             return Ok(parkingLotId);
         }
+
+        [HttpGet("parkinglots")]
+        public async Task<ActionResult<int>> GetParkingLotsByPage(int pageSize = 15, int pageIndex = 1)
+        {
+            return Ok(await this.parkingLotService.GetParkingLotsByPage(pageSize, pageIndex));
+        }
     }
 }
