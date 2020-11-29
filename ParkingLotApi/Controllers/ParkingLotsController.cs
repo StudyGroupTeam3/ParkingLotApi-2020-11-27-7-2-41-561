@@ -23,7 +23,13 @@ namespace ParkingLotApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ParkingLotDto>> AddParkingLot(ParkingLotDto parkingLotDto)
         {
-            return null;
+            var name = await this.parkingLotService.AddParkingLot(parkingLotDto);
+            if (name != null)
+            {
+                return CreatedAtAction(nameof(GetParkingLotByName), new { name = name }, parkingLotDto);
+            }
+
+            return BadRequest("please valid your parking lot information again");
         }
 
         [HttpDelete("{name}")]
