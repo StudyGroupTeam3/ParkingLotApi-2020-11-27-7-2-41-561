@@ -103,6 +103,28 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
+        public async Task Should_return_400_if_capacity_provided_is_minus_when_POST_AddParkingLot()
+        {
+            // given
+            parkingLotContext.Database.EnsureDeleted();
+            parkingLotContext.Database.EnsureCreated();
+            ParkingLotDto parkingLotDto = new ParkingLotDto
+            {
+                Name = "NO.1",
+                Capacity = -1,
+                Location = "Area1",
+            };
+
+            // when
+            var httpContent = JsonConvert.SerializeObject(parkingLotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var response = await client.PostAsync("/parkinglots", content);
+
+            // then
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
         public async Task Should_return_400_parking_lot_name_already_exists_when_POST_AddParkingLot()
         {
             // given
