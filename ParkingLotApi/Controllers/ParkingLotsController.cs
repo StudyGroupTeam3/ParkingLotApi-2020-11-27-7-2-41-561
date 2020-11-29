@@ -32,25 +32,26 @@ namespace ParkingLotApi.Controllers
             return BadRequest("please valid your parking lot information again");
         }
 
-        [HttpDelete("{name}")]
+        [HttpDelete("{parkingLotName}")]
         public async Task<ActionResult> DeleteParkingLot(string parkingLotName)
         {
             return this.NoContent();
         }
 
-        [HttpGet("/pages/{index}")]
+        [HttpGet("pages/{pageIndex}")]
         public async Task<ActionResult<List<ParkingLotDto>>> GetParkingLotByPageIndex(int pageIndex)
         {
             return null;
         }
 
-        [HttpGet("/{name}")]
+        [HttpGet("{parkingLotName}")]
         public async Task<ActionResult<ParkingLotDto>> GetParkingLotByName(string parkingLotName)
         {
-            return null;
+            var parkingLotDto = await this.parkingLotService.GetParkingLotByName(parkingLotName);
+            return Ok(parkingLotDto);
         }
 
-        [HttpPatch("/{name}")]
+        [HttpPatch("{name}")]
         public async Task<ActionResult<ParkingLotDto>> UpdateParkingLotCapacity(string parkingLotName)
         {
             return null;

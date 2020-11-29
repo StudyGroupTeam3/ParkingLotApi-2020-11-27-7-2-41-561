@@ -22,7 +22,7 @@ namespace ParkingLotApi.Entities
 
         public int Id { get; set; }
         public string Name { get; set; }
-        public int Capacity { get; set; }
+        public int? Capacity { get; set; } = 0;
         public string Location { get; set; }
     }
 }

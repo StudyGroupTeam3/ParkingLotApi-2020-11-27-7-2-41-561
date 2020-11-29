@@ -28,7 +28,7 @@ namespace ParkingLotApi.Services
         {
             ParkingLotEntity parkingLotEntity = new ParkingLotEntity(parkingLotDto);
             var foundParkingLot = await GetParkingLotByName(parkingLotDto.Name);
-            if (foundParkingLot.Name == "default")
+            if (foundParkingLot.Name == null)
             {
                 await this.parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
                 await this.parkingLotContext.SaveChangesAsync();

@@ -15,6 +15,7 @@ using Xunit;
 
 namespace ParkingLotApiTest.ControllerTest
 {
+    [Collection("IntegrationTest")]
     public class ParkingLotsControllerTest : TestBase
     {
         public ParkingLotsControllerTest(CustomWebApplicationFactory<Startup> factory) : base(factory)
@@ -38,15 +39,37 @@ namespace ParkingLotApiTest.ControllerTest
         [Fact]
         public async Task Should_not_add_parkingLot_when_add_parkingLot_with_name_already_used()
         {
+            // given
             var client = GetClient();
             ParkingLotDto parkingLotDto = GenerateParkingLotDto();
             var httpContent = JsonConvert.SerializeObject(parkingLotDto);
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
             await client.PostAsync("/ParkingLots", content);
 
+            // when
             var response = await client.PostAsync("/ParkingLots", content);
 
+            // then
             Assert.True(response.StatusCode == HttpStatusCode.BadRequest);
+        }
+
+        [Fact]
+        public async Task Should_get_correct_parkingLot_when_get_parkingLot_by_name()
+        {
+            // given
+            var client = GetClient();
+            ParkingLotDto parkingLotDto = GenerateParkingLotDto();
+            var httpContent = JsonConvert.SerializeObject(parkingLotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            await client.PostAsync("/ParkingLots", content);
+
+            // when
+            var response = await client.GetAsync($"/ParkingLots/{parkingLotDto.Name}");
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var responseParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(responseBody);
+
+            Assert.True(response.StatusCode == HttpStatusCode.OK);
+            Assert.Equal(parkingLotDto.Name, responseParkingLot.Name);
         }
 
         private static ParkingLotDto GenerateParkingLotDto()

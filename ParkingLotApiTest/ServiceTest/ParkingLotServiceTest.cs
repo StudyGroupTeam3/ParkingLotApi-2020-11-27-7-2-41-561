@@ -29,7 +29,6 @@ namespace ParkingLotApiTest.ControllerTest
             var parkingLotDto = GenerateParkingLotDto();
 
             ParkingLotService parkingLotService = new ParkingLotService(context);
-
             var parkingLotName = await parkingLotService.AddParkingLot(parkingLotDto);
             var foundParkingLot = await context.ParkingLots.FirstOrDefaultAsync(parkingLotEntity => parkingLotEntity.Name == parkingLotName);
 
