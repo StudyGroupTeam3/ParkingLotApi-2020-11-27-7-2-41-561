@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using ParkingLotApi.Dtos;
+using ParkingLotApi.Repository;
 using ParkingLotApi.Services;
 
 namespace ParkingLotApi.Controllers
@@ -16,10 +17,12 @@ namespace ParkingLotApi.Controllers
     public class ParkingLotController : ControllerBase
     {
         private readonly ParkingLotService parkingLotService;
+        private readonly ParkingLotContext parkingLotContext;
 
-        public ParkingLotController(ParkingLotService parkingLotService)
+        public ParkingLotController(ParkingLotService parkingLotService, ParkingLotContext parkingLotContext)
         {
             this.parkingLotService = parkingLotService;
+            this.parkingLotContext = parkingLotContext;
         }
 
         [HttpPost]
@@ -38,6 +41,11 @@ namespace ParkingLotApi.Controllers
             if (parkingLotDto.Capacity == null || parkingLotDto.Capacity < 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Input with Capacity null or minus." });
+            }
+
+            if (parkingLotContext.ParkingLot.Any(parkingLotEntity => parkingLotEntity.Name == parkingLotDto.Name))
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Input parkingLot name is already exist." });
             }
 
             var id = await this.parkingLotService.AddParkingLot(parkingLotDto);
