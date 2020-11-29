@@ -16,13 +16,12 @@ namespace ParkingLotApi.Dtos
 
         public ParkingOrderDto(ParkingOrderEntity parkingOrderEntity)
         {
-            this.OrderNumber = parkingOrderEntity?.OrderNumber;
             this.ParkingLotName = parkingOrderEntity?.ParkingLotName;
             this.PlateNumber = parkingOrderEntity?.PlateNumber;
             this.OrderStatus = parkingOrderEntity?.OrderStatus;
         }
 
-        public string OrderNumber { get; set; }
+        public string OrderNumber { get; set; } = Guid.NewGuid().ToString();
         public string ParkingLotName { get; set; }
         public string PlateNumber { get; set; }
         public DateTime CreateTime { get; set; }

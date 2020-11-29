@@ -11,11 +11,44 @@ namespace ParkingLotApi.Services
 {
     public class ParkingOrderService
     {
-        private ParkingLotContext parkingLotContext;
+        private readonly ParkingLotContext parkingLotContext;
 
         public ParkingOrderService(ParkingLotContext parkingLotContext)
         {
             this.parkingLotContext = parkingLotContext;
+        }
+
+        public async Task<string> AddParkingOrder(ParkingOrderDto parkingOrderDto)
+        {
+            ParkingOrderEntity parkingOrderEntity = new ParkingOrderEntity(parkingOrderDto);
+            await parkingLotContext.ParkingOrders.AddAsync(parkingOrderEntity);
+            await parkingLotContext.SaveChangesAsync();
+
+            return parkingOrderEntity.OrderNumber;
+        }
+
+        public async Task<List<ParkingOrderEntity>> GetOrders()
+        {
+            //var orderEntities = await parkingLotContext.ParkingOrders.ToListAsync();
+
+            //return orderEntities;
+            return null;
+        }
+
+        public async Task<ParkingOrderDto> GetOrderByNumber(string number)
+        {
+            //var orderEntity = await parkingLotContext.ParkingOrders.FirstOrDefaultAsync(order => order.OrderNumber == number);
+
+            //return new ParkingOrderDto(orderEntity);
+            return null;
+        }
+
+        public async Task UpdateOrder(string number, UpdateParkingOrderDto data)
+        {
+            //var orderEntity = parkingLotContext.ParkingOrders.FirstOrDefaultAsync(order => order.OrderNumber == number).Result;
+            //orderEntity.OrderStatus = data.OrderStatus;
+            //orderEntity.CloseTime = data.CloseTime;
+            //await parkingLotContext.SaveChangesAsync();
         }
     }
 }

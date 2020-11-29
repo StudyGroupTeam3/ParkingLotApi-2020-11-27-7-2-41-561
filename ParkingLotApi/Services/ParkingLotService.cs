@@ -11,7 +11,7 @@ namespace ParkingLotApi.Services
 {
     public class ParkingLotService
     {
-        private ParkingLotContext parkingLotContext;
+        private readonly ParkingLotContext parkingLotContext;
 
         public ParkingLotService(ParkingLotContext parkingLotContext)
         {
