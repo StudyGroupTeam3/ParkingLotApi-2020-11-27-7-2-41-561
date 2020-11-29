@@ -90,10 +90,26 @@ namespace ParkingLotApi.Service
 
         public async Task<int> CreateOrder(OrderDto newOrderDto)
         {
-            var parkingLots = await parkingLotDbContext.Parkinglots.ToListAsync();
+            var parkingLots = await parkingLotDbContext.Parkinglots.
+                Include(parklot => parklot.Orders).ToListAsync();
             var targetParkinglot = parkingLots.FirstOrDefault(parkingLot 
                 => parkingLot.Name == newOrderDto.NameOfParkingLot);
             var orderEntity = new OrderEntity(newOrderDto);
+            orderEntity.OrderStatus = "Open";
+            var occupiedPositions = 0;
+            foreach (var order in targetParkinglot.Orders)
+            {
+                if (order.OrderStatus.ToLower() == "open")
+                {
+                    occupiedPositions += 1;
+                }
+            }
+
+            if (occupiedPositions >= targetParkinglot.Capacity)
+            {
+                return -1;
+            }
+
             targetParkinglot.Orders.Add(orderEntity);
             await parkingLotDbContext.Orders.AddAsync(orderEntity);
             await parkingLotDbContext.SaveChangesAsync();

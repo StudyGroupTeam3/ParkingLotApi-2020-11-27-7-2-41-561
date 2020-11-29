@@ -92,6 +92,14 @@ namespace ParkingLotApi.Controllers
         public async Task<ActionResult<OrderDto>> CreateParkingOrder(OrderDto orderDto)
         {
             var id = await parkingLotService.CreateOrder(orderDto);
+            if (id == -1)
+            {
+                return Conflict(new
+                {
+                    message = "Sorry, the parkinglot is full!"
+                });
+            }
+
             return CreatedAtAction(nameof(GetOrderById), new { id = id }, orderDto);
         }
 
