@@ -19,15 +19,14 @@ namespace ParkingLotApi.Dtos
             this.CreateTime = parkingOrderDto.CreateTime;
             this.CloseTime = parkingOrderDto.CloseTime;
             this.OrderStatus = parkingOrderDto.OrderStatus;
-            this.PlateNumber = parkingOrderDto.PlateNumber;
         }
 
         public int Id { get; set; }
         public string OrderNumber { get; set; }
         public string ParkingLotName { get; set; }
         public string PlateNumber { get; set; }
-        public DateTime CreateTime { get; set; }
-        public DateTime CloseTime { get; set; }
+        public DateTime CreateTime { get; set; } = DateTime.Now;
+        public DateTime CloseTime { get; set; } = DateTime.Now;
         public bool OrderStatus { get; set; } = false;
     }
 }

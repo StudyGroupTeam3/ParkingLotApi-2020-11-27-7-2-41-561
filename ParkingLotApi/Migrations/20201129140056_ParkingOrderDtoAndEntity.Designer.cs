@@ -9,7 +9,7 @@ using ParkingLotApi.Repository;
 namespace ParkingLotApi.Migrations
 {
     [DbContext(typeof(ParkingLotContext))]
-    [Migration("20201129125701_ParkingOrderDtoAndEntity")]
+    [Migration("20201129140056_ParkingOrderDtoAndEntity")]
     partial class ParkingOrderDtoAndEntity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
