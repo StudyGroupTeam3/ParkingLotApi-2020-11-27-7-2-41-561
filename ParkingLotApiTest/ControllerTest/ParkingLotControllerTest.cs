@@ -99,33 +99,7 @@ namespace ParkingLotApiTest.ControllerTest
         public async Task Should_return_list_of_parking_lot_dtos_in_specified_page_range_when_GET_GetParkingLotsByPages()
         {
             // given
-            parkingLotContext.Database.EnsureDeleted();
-            parkingLotContext.Database.EnsureCreated();
-            var parkingLotService = new ParkingLotService(parkingLotContext);
-
-            ParkingLotDto parkingLotDto1 = new ParkingLotDto
-            {
-                Name = "NO.1",
-                Capacity = 10,
-                Location = "Area1"
-            };
-            await parkingLotService.AddParkingLot(parkingLotDto1);
-
-            ParkingLotDto parkingLotDto2 = new ParkingLotDto
-            {
-                Name = "NO.2",
-                Capacity = 10,
-                Location = "Area2"
-            };
-            await parkingLotService.AddParkingLot(parkingLotDto2);
-
-            ParkingLotDto parkingLotDto3 = new ParkingLotDto
-            {
-                Name = "NO.3",
-                Capacity = 10,
-                Location = "Area3"
-            };
-            await parkingLotService.AddParkingLot(parkingLotDto3);
+            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
 
             // when
             var response = await client.GetAsync("/parkinglots?pageIndex=2&pageSize=2");
@@ -133,7 +107,7 @@ namespace ParkingLotApiTest.ControllerTest
 
             // then
             var actualParkingLotDtos = JsonConvert.DeserializeObject<List<ParkingLotDto>>(await response.Content.ReadAsStringAsync());
-            Assert.Equal(new List<ParkingLotDto>() { parkingLotDto3 }, actualParkingLotDtos);
+            Assert.Equal(new List<ParkingLotDto>() { parkingLotDtos[2] }, actualParkingLotDtos);
         }
 
         [Fact]
