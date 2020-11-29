@@ -111,6 +111,7 @@ namespace ParkingLotApiTest
 
             // then
             Assert.Equal(parkingLotDtos[2], actualParkingLotDto);
+            Assert.Null(parkingLotContext.ParkingLots.Find(parkingLotIds[2]));
         }
 
         [Fact]
@@ -121,6 +122,39 @@ namespace ParkingLotApiTest
 
             // when
             var actualParkingLotDto = await parkingLotService.DeleteParkingLotById(parkingLotIds.Last() + 1);
+
+            // then
+            Assert.Null(actualParkingLotDto);
+        }
+
+        [Fact]
+        public async Task Should_return_parking_lot_specified_by_id_with_updated_capacity_when_UpdateParkingLotCapacityById()
+        {
+            // given
+            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+
+            // when
+            var expactedParkingLotDto = new ParkingLotDto
+            {
+                Name = parkingLotDtos[1].Name,
+                Capacity = 20,
+                Location = parkingLotDtos[1].Location,
+            };
+            await parkingLotService.UpdateParkingLotCapacityById(parkingLotIds[1], new ParkingLotCapacityUpdateDto { Capacity = 20 });
+            var actualParkingLotDto = new ParkingLotDto(parkingLotContext.ParkingLots.Find(parkingLotIds[1]));
+
+            // then
+            Assert.Equal(expactedParkingLotDto, actualParkingLotDto);
+        }
+
+        [Fact]
+        public async Task Should_return_null_if_parking_lot_specified_by_id_does_not_exist_when_UpdateParkingLotCapacityById()
+        {
+            // given
+            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+
+            // when
+            var actualParkingLotDto = await parkingLotService.UpdateParkingLotCapacityById(parkingLotIds.Last() + 1, new ParkingLotCapacityUpdateDto { Capacity = 20 });
 
             // then
             Assert.Null(actualParkingLotDto);

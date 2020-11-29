@@ -24,7 +24,7 @@ namespace ParkingLotApi.Controllers
         public async Task<ActionResult<int>> AddParkingLot(ParkingLotDto parkingLotDto)
         {
             int parkingLotId = await this.parkingLotService.AddParkingLot(parkingLotDto);
-            return CreatedAtAction(nameof(GetParkingLotsById), new { parkingLotId = parkingLotId }, parkingLotDto);
+            return CreatedAtAction(nameof(GetParkingLotById), new { parkingLotId = parkingLotId }, parkingLotDto);
         }
 
         [HttpGet("parkinglots")]
@@ -34,7 +34,7 @@ namespace ParkingLotApi.Controllers
         }
 
         [HttpGet("parkinglots/{parkingLotId:int}")]
-        public async Task<ActionResult<ParkingLotDto>> GetParkingLotsById(int parkingLotId)
+        public async Task<ActionResult<ParkingLotDto>> GetParkingLotById(int parkingLotId)
         {
             var parkingLotDto = await this.parkingLotService.GetParkingLotById(parkingLotId);
             if (parkingLotDto is null)
@@ -46,9 +46,21 @@ namespace ParkingLotApi.Controllers
         }
 
         [HttpDelete("parkinglots/{parkingLotId:int}")]
-        public async Task<ActionResult<ParkingLotDto>> DeleteParkingLotsById(int parkingLotId)
+        public async Task<ActionResult<ParkingLotDto>> DeleteParkingLotById(int parkingLotId)
         {
             var parkingLotDto = await this.parkingLotService.DeleteParkingLotById(parkingLotId);
+            if (parkingLotDto is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(parkingLotDto);
+        }
+
+        [HttpPatch("parkinglots/{parkingLotId:int}")]
+        public async Task<ActionResult<ParkingLotDto>> UpdateParkingLotCapacityById(int parkingLotId, ParkingLotCapacityUpdateDto parkingLotCapacityUpdateModel)
+        {
+            var parkingLotDto = await this.parkingLotService.UpdateParkingLotCapacityById(parkingLotId, parkingLotCapacityUpdateModel);
             if (parkingLotDto is null)
             {
                 return NotFound();

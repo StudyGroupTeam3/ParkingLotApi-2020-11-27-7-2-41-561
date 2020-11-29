@@ -52,4 +52,10 @@ namespace ParkingLotApi.Dtos
             return Name == other.Name && Capacity == other.Capacity && Location == other.Location;
         }
     }
+
+    public class ParkingLotCapacityUpdateDto
+    {
+        [Required]
+        public int Capacity { get; set; }
+    }
 }
