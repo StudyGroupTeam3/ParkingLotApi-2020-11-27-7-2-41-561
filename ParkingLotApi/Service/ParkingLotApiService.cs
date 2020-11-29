@@ -64,5 +64,12 @@ namespace ParkingLotApi.Service
             await this.parkingLotDbContext.SaveChangesAsync();
             return true;
         }
+
+        public async Task<ParkinglotDTO> GetByName(string name)
+        {
+            var foundParkingLot = await this.parkingLotDbContext.Parkinglots.FirstOrDefaultAsync
+                (parkingLot => parkingLot.Name == name);
+            return new ParkinglotDTO(foundParkingLot);
+        }
     }
 }

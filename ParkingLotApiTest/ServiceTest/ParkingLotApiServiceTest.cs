@@ -63,6 +63,30 @@ namespace ParkingLotApiTest.ServiceTest
             Assert.Equal(expectedCount, actualCount);
         }
 
+        [Fact]
+        public async Task Should_Get_Parkinglot_By_Name_Success_Via_ParkingLotService()
+        {
+            //Given
+            var context = GetParkingLotDbContext();
+            ParkingLotApiService parkingLotApiService = new ParkingLotApiService(context);
+            List<ParkinglotDTO> parkingLotDtos = GenerateSomeParkinglots();
+            foreach (var parkingLotDto in parkingLotDtos)
+            {
+                await parkingLotApiService.AddParkingLotAsnyc(parkingLotDto);
+            }
+
+            var testName = "SuperPark_1";
+            var parkingLot = context.Parkinglots.FirstOrDefault(parkingLot
+                => parkingLot.Name == testName);
+            var expectedDto = new ParkinglotDTO(parkingLot);
+
+            //When
+            var actualDto = await parkingLotApiService.GetByName(testName);
+
+            //Then
+            Assert.Equal(expectedDto, actualDto);
+        }
+
         private ParkingLotContext GetParkingLotDbContext()
         {
             var scope = Factory.Services.CreateScope();
