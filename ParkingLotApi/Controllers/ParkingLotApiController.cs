@@ -87,5 +87,19 @@ namespace ParkingLotApi.Controllers
         {
             return Ok(await parkingLotService.ChangeCapacity(updateModel));
         }
+
+        [HttpPost("Orders")]
+        public async Task<ActionResult<OrderDto>> CreateParkingOrder(OrderDto orderDto)
+        {
+            var id = await parkingLotService.CreateOrder(orderDto);
+            return CreatedAtAction(nameof(GetOrderById), new { id = id }, orderDto);
+        }
+
+        [HttpGet("Orders/{id}")]
+        public async Task<ActionResult<OrderDto>> GetOrderById(int id)
+        {
+            var orderDto = await this.parkingLotService.GetOrderById(id);
+            return Ok(orderDto);
+        }
     }
 }
