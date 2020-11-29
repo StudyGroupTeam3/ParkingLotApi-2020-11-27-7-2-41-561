@@ -24,17 +24,10 @@ namespace ParkingLotApiTest.ControllerTest
         {
             //Given
             var client = GetClient();
-            ParkinglotDTO parkinglotDto = new ParkinglotDTO()
-            {
-                Name = "SuperPark_1",
-                Capacity = 10,
-                Location = "WuDaoKong"
-            };
-            var httpContent = JsonConvert.SerializeObject(parkinglotDto);
-            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var parkinglotDto = GenerateOneParkinglot();
+            var postResponse = await AddOneParkinglotInTestDatabase(parkinglotDto);
 
             //When
-            var postResponse = await client.PostAsync("/ParkingLotApi/ParkingLots", content);
             var id = postResponse.Headers.Location.AbsolutePath.Split("/").ToList().LastOrDefault();
             var getResponse = await client.GetAsync($"/ParkingLotApi/ParkingLots/{id}");
             var body = await getResponse.Content.ReadAsStringAsync();
@@ -48,12 +41,7 @@ namespace ParkingLotApiTest.ControllerTest
         {
             //Given
             var client = GetClient();
-            ParkinglotDTO parkinglotDto = new ParkinglotDTO()
-            {
-                Name = "SuperPark_1",
-                Capacity = 10,
-                Location = "WuDaoKong"
-            };
+            var parkinglotDto = GenerateOneParkinglot();
             var httpContent = JsonConvert.SerializeObject(parkinglotDto);
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
             await client.PostAsync("/ParkingLotApi/ParkingLots", content);
@@ -96,15 +84,8 @@ namespace ParkingLotApiTest.ControllerTest
         {
             //Given
             var client = GetClient();
-            ParkinglotDTO parkinglotDto = new ParkinglotDTO()
-            {
-                Name = "SuperPark_1",
-                Capacity = 10,
-                Location = "WuDaoKong"
-            };
-            var httpContent = JsonConvert.SerializeObject(parkinglotDto);
-            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var postResponse = await client.PostAsync("/ParkingLotApi/ParkingLots", content);
+            var parkinglotDto = GenerateOneParkinglot();
+            var postResponse = await AddOneParkinglotInTestDatabase(parkinglotDto);
             var id = postResponse.Headers.Location.AbsolutePath.Split("/").ToList().LastOrDefault();
 
             //When
@@ -136,15 +117,8 @@ namespace ParkingLotApiTest.ControllerTest
         {
             //Given
             var client = GetClient();
-            ParkinglotDTO parkinglotDto = new ParkinglotDTO()
-            {
-                Name = "SuperPark_1",
-                Capacity = 10,
-                Location = "WuDaoKong"
-            };
-            var httpContent = JsonConvert.SerializeObject(parkinglotDto);
-            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            await client.PostAsync("/ParkingLotApi/ParkingLots", content);
+            var parkinglotDto = GenerateOneParkinglot();
+            await AddOneParkinglotInTestDatabase(parkinglotDto);
 
             //When
             var getResponse = await client.GetAsync("/ParkingLotApi/ParkingLots? name = SuperPark_1");
@@ -160,28 +134,40 @@ namespace ParkingLotApiTest.ControllerTest
         {
             //Given
             var client = GetClient();
-            ParkinglotDTO parkinglotDto = new ParkinglotDTO()
-            {
-                Name = "SuperPark_1",
-                Capacity = 10,
-                Location = "WuDaoKong"
-            };
-            var httpContent = JsonConvert.SerializeObject(parkinglotDto);
-            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            await client.PostAsync("/ParkingLotApi/ParkingLots", content);
+            var parkinglotDto = GenerateOneParkinglot();
+            await AddOneParkinglotInTestDatabase(parkinglotDto);
             UpdateModel updateModel = new UpdateModel("SuperPark_1", 30);
             var expectedCapacity = updateModel.Capacity;
 
             //When
-            var httpContent1 = JsonConvert.SerializeObject(updateModel);
-            StringContent content1 = new StringContent(httpContent1, Encoding.UTF8, MediaTypeNames.Application.Json);
-            await client.PatchAsync("/ParkingLotApi/ParkingLots", content1);
+            var httpContent = JsonConvert.SerializeObject(updateModel);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            await client.PatchAsync("/ParkingLotApi/ParkingLots", content);
             var getResponse = await client.GetAsync("/ParkingLotApi/ParkingLots? name = SuperPark_1");
             var body = await getResponse.Content.ReadAsStringAsync();
             var returnedDto = JsonConvert.DeserializeObject<List<ParkinglotDTO>>(body)[0];
 
             //Then
             Assert.Equal(expectedCapacity, returnedDto.Capacity);
+        }
+
+        private async Task<HttpResponseMessage> AddOneParkinglotInTestDatabase(ParkinglotDTO parkinglotDto)
+        {
+            var client = GetClient();
+            var httpContent = JsonConvert.SerializeObject(parkinglotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+            return await client.PostAsync("/ParkingLotApi/ParkingLots", content);
+        }
+
+        private ParkinglotDTO GenerateOneParkinglot()
+        {
+            return new ParkinglotDTO()
+            {
+                Name = "SuperPark_1",
+                Capacity = 10,
+                Location = "WuDaoKong"
+            };
         }
     }
 }
