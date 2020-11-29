@@ -74,7 +74,16 @@ namespace ParkingLotApi.Service
 
         public async Task<int> ChangeCapacity(UpdateModel updateModel)
         {
-            return 40;
+            var parkingLots = await GetAll();
+            foreach (var parkingLot in parkingLots)
+            {
+                if (parkingLot.Name == updateModel.Name)
+                {
+                    parkingLot.Capacity = updateModel.Capacity;
+                }
+            }
+
+            return parkingLots.FirstOrDefault(parkingLot => parkingLot.Name == updateModel.Name).Capacity;
         }
     }
 }
