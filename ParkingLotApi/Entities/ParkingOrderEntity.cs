@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ParkingLotApi.Dtos;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,10 +13,10 @@ namespace ParkingLotApi.Entities
         {
         }
 
-        public ParkingOrderEntity(string nameOfParkingLot, string plateNumber)
+        public ParkingOrderEntity(ParkingOrderDto parkingDto)
         {
-            this.NameOfParkingLot = nameOfParkingLot;
-            this.PlateNumber = plateNumber;
+            this.NameOfParkingLot = parkingDto.NameOfParkingLot;
+            this.PlateNumber = parkingDto.PlateNumber;
             this.CreationTime = DateTime.Now;
             this.OrderStatus = true;
         }
