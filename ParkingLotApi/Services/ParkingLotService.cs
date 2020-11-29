@@ -47,6 +47,18 @@ namespace ParkingLotApi.Services
             return parkingLotEntities.Select(lot => new ParkingLot(lot)).ToList();
         }
 
+        public async Task<List<ParkingLot>> GetAllParkingLots(int page)
+        {
+            const int chunkSize = 15;
+            var parkingLotEntities = await context.ParkingLots.ToListAsync();
+            var lotLists = parkingLotEntities.Select((x, i) => new { Index = i, Value = x })
+                .GroupBy(x => x.Index / chunkSize)
+                .Select(x => x.Select(v => v.Value).ToList())
+                .ToList();
+
+            return lotLists[page - 1].Select(lot => new ParkingLot(lot)).ToList();
+        }
+
         public async Task UpdateParkingLot(string name, ParkingLotUpdateModel data)
         {
             var parkingLotEntity = context.ParkingLots.FirstOrDefaultAsync(lot => lot.Name == name).Result;

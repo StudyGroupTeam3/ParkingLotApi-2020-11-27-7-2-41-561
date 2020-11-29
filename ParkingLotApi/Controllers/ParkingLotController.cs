@@ -4,6 +4,7 @@ using ParkingLotApi.Dtos;
 using ParkingLotApi.Services;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.OpenApi.Writers;
 using ParkingLotApi.Models;
 
 namespace ParkingLotApi.Controllers
@@ -43,11 +44,16 @@ namespace ParkingLotApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ParkingLot>>> GetAll()
+        public async Task<ActionResult<List<ParkingLot>>> GetAll(int page)
         {
-            var lots = await service.GetAllParkingLots();
+            if (page != 0)
+            {
+                var lots = await service.GetAllParkingLots(page);
+                return Ok(lots);
+            }
 
-            return Ok(lots);
+            var allLots = await service.GetAllParkingLots();
+            return Ok(allLots);
         }
 
         [HttpDelete("{name}")]
