@@ -62,7 +62,7 @@ namespace ParkingLotApi.Controllers
         //}
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ParkingLotDto>>> ListByPages(int startPage = 1, int pageSize = 15)
+        public async Task<ActionResult<IEnumerable<ParkingLotDto>>> ListByPages([FromQuery] int startPage = 1, [FromQuery] int pageSize = 15)
         {
             var parkingLotDtos = await this.parkingLotService.GetAllByPages(startPage, pageSize);
 

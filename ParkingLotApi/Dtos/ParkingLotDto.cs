@@ -23,5 +23,16 @@ namespace ParkingLotApi.Dtos
         public string Name { get; set; }
         public int? Capacity { get; set; }
         public string Location { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || obj.GetType() != this.GetType())
+            {
+                return false;
+            }
+
+            var parkingLotDto = (ParkingLotDto)obj;
+            return Name == parkingLotDto.Name && Capacity == parkingLotDto.Capacity && Location == parkingLotDto.Location;
+        }
     }
 }
