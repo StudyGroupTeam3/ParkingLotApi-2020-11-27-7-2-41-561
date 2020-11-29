@@ -54,12 +54,14 @@ namespace ParkingLotApiTest.ServiceTest
         public async Task Story1_AC3_Should_get_all_parkingLots()
         {
             // given
-            var parkingLot = new ParkingLot("Lot1", 10, "location1");
+            var parkingLot1 = new ParkingLot("Lot1", 10, "location1");
+            var parkingLot2 = new ParkingLot("Lot2", 10, "location1");
+            var parkingLot3 = new ParkingLot("Lot3", 10, "location1");
 
             // when
-            await service.AddParkingLot(parkingLot);
-            await service.AddParkingLot(parkingLot);
-            await service.AddParkingLot(parkingLot);
+            await service.AddParkingLot(parkingLot1);
+            await service.AddParkingLot(parkingLot2);
+            await service.AddParkingLot(parkingLot3);
 
             // then
             Assert.Equal(3, context.ParkingLots.CountAsync().Result);
@@ -74,8 +76,8 @@ namespace ParkingLotApiTest.ServiceTest
 
             // when
             await service.AddParkingLot(parkingLot1);
-            var id = await service.AddParkingLot(parkingLot2);
-            var lot = service.GetParkingLotById(id);
+            var name = await service.AddParkingLot(parkingLot2);
+            var lot = service.GetParkingLotByName(name);
 
             // then
             Assert.Equal(parkingLot2, lot.Result);
@@ -89,9 +91,9 @@ namespace ParkingLotApiTest.ServiceTest
             var updateModel = new ParkingLotUpdateModel(20);
 
             // when
-            var id = await service.AddParkingLot(parkingLot);
-            await service.UpdateParkingLot(id, updateModel);
-            var lot = await service.GetParkingLotById(id);
+            var name = await service.AddParkingLot(parkingLot);
+            await service.UpdateParkingLot(name, updateModel);
+            var lot = await service.GetParkingLotByName(name);
 
             // then
             Assert.Equal(updateModel.Capacity, lot.Capacity);

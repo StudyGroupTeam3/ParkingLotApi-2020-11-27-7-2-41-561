@@ -1,4 +1,5 @@
-﻿using ParkingLotApi.Dtos;
+﻿using System.ComponentModel.DataAnnotations;
+using ParkingLotApi.Dtos;
 
 namespace ParkingLotApi.Entities
 {
@@ -15,7 +16,7 @@ namespace ParkingLotApi.Entities
             Location = parkingLot.Location;
         }
 
-        public int Id { get; set; }
+        [Key]
         public string Name { get; set; }
         public int Capacity { get; set; }
         public string Location { get; set; }

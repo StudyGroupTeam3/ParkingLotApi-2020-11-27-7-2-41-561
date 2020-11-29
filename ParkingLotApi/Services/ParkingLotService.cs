@@ -18,24 +18,24 @@ namespace ParkingLotApi.Services
             this.context = context;
         }
 
-        public async Task<int> AddParkingLot(ParkingLot parkingLot)
+        public async Task<string> AddParkingLot(ParkingLot parkingLot)
         {
             var parkingLotEntity = await context.ParkingLots.AddAsync(new ParkingLotEntity(parkingLot));
             await context.SaveChangesAsync();
 
-            return parkingLotEntity.Entity.Id;
+            return parkingLotEntity.Entity.Name;
         }
 
-        public async Task<ParkingLot> GetParkingLotById(int id)
+        public async Task<ParkingLot> GetParkingLotByName(string name)
         {
-            var parkingLotEntityFound = await context.ParkingLots.FirstOrDefaultAsync(lot => lot.Id == id);
+            var parkingLotEntityFound = await context.ParkingLots.FirstOrDefaultAsync(lot => lot.Name == name);
 
             return parkingLotEntityFound == null ? null : new ParkingLot(parkingLotEntityFound);
         }
 
-        public async Task DeleteParkingLot(int id)
+        public async Task DeleteParkingLot(string name)
         {
-            var parkingLotEntity = context.ParkingLots.FirstOrDefaultAsync(lot => lot.Id == id).Result;
+            var parkingLotEntity = context.ParkingLots.FirstOrDefaultAsync(lot => lot.Name == name).Result;
             context.ParkingLots.Remove(parkingLotEntity);
             await context.SaveChangesAsync();
         }
@@ -47,9 +47,9 @@ namespace ParkingLotApi.Services
             return parkingLotEntities.Select(lot => new ParkingLot(lot)).ToList();
         }
 
-        public async Task UpdateParkingLot(int id, ParkingLotUpdateModel data)
+        public async Task UpdateParkingLot(string name, ParkingLotUpdateModel data)
         {
-            var parkingLotEntity = context.ParkingLots.FirstOrDefaultAsync(lot => lot.Id == id).Result;
+            var parkingLotEntity = context.ParkingLots.FirstOrDefaultAsync(lot => lot.Name == name).Result;
             parkingLotEntity.Capacity = data.Capacity;
             await context.SaveChangesAsync();
         }

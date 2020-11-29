@@ -41,7 +41,7 @@ namespace ParkingLotApiTest.ControllerTest
             // then
             Assert.Equal(parkingLot, new ParkingLot(context.ParkingLots.FirstAsync().Result));
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-            Assert.Contains("/parkingLots/1", response.Headers.Location.AbsoluteUri);
+            Assert.Contains("/parkingLots/Lot1", response.Headers.Location.AbsoluteUri);
 
             Assert.Equal(HttpStatusCode.BadRequest, responseExistName.StatusCode);
         }

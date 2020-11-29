@@ -29,17 +29,17 @@ namespace ParkingLotApi.Controllers
                 return BadRequest("lot with same name exists");
             }
 
-            var id = await service.AddParkingLot(parkingLot);
+            var name = await service.AddParkingLot(parkingLot);
 
-            return CreatedAtAction(nameof(GetById), new { id = id }, parkingLot);
+            return CreatedAtAction(nameof(GetByName), new { name = name }, parkingLot);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ParkingLot>> GetById(int id)
+        [HttpGet("{name}")]
+        public async Task<ActionResult<ParkingLot>> GetByName(string name)
         {
-            var lotFound = await service.GetParkingLotById(id);
+            var lotFound = await service.GetParkingLotByName(name);
 
-            return lotFound == null ? (ActionResult<ParkingLot>)NotFound("no lot match id") : Ok(lotFound);
+            return lotFound == null ? (ActionResult<ParkingLot>)NotFound("no lot match name") : Ok(lotFound);
         }
 
         [HttpGet]
@@ -50,31 +50,31 @@ namespace ParkingLotApi.Controllers
             return Ok(lots);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpDelete("{name}")]
+        public async Task<IActionResult> Delete(string name)
         {
-            var lotFound = await service.GetParkingLotById(id);
+            var lotFound = await service.GetParkingLotByName(name);
 
             if (lotFound == null)
             {
-                return NotFound("no lot match id");
+                return NotFound("no lot match name");
             }
 
-            await service.DeleteParkingLot(id);
+            await service.DeleteParkingLot(name);
             return NoContent();
         }
 
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(int id, ParkingLotUpdateModel data)
+        [HttpPatch("{name}")]
+        public async Task<IActionResult> Patch(string name, ParkingLotUpdateModel data)
         {
-            var lotFound = await service.GetParkingLotById(id);
+            var lotFound = await service.GetParkingLotByName(name);
 
             if (lotFound == null)
             {
-                return NotFound("no lot match id");
+                return NotFound("no lot match name");
             }
 
-            await service.UpdateParkingLot(id, data);
+            await service.UpdateParkingLot(name, data);
             return NoContent();
         }
     }
