@@ -33,11 +33,24 @@ namespace ParkingLotApi.Services
             return new ParkingLotDto(foundParkingLotEntity);
         }
 
-        public async Task<List<ParkingLotDto>> GetAll()
+        //public async Task<List<ParkingLotDto>> GetAll()
+        //{
+        //    var parkingLots = await this.parkingLotContext.ParkingLot
+        //        .ToListAsync();
+        //    return parkingLots.Select(companyEntity => new ParkingLotDto(companyEntity)).ToList();
+        //}
+
+        public async Task<List<ParkingLotDto>> GetAllByPages(int startPage, int pageSize)
         {
-            var parkingLots = await this.parkingLotContext.ParkingLot
+            int skip = (startPage - 1) * pageSize;
+
+            var parkingLotsByPages = await this.parkingLotContext.ParkingLot
+                .OrderBy(c => c.Id)
+                .Skip(skip)
+                .Take(pageSize)
                 .ToListAsync();
-            return parkingLots.Select(companyEntity => new ParkingLotDto(companyEntity)).ToList();
+
+            return parkingLotsByPages.Select(companyEntity => new ParkingLotDto(companyEntity)).ToList();
         }
 
         public async Task DeleteParkingLot(int id)
