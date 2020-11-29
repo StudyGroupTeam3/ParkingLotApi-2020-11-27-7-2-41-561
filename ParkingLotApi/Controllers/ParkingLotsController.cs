@@ -35,7 +35,8 @@ namespace ParkingLotApi.Controllers
         [HttpDelete("{parkingLotName}")]
         public async Task<ActionResult> DeleteParkingLot(string parkingLotName)
         {
-            return this.NoContent();
+            await this.parkingLotService.DeleteParkingLot(parkingLotName);
+            return NoContent();
         }
 
         [HttpGet("pages/{pageIndex}")]

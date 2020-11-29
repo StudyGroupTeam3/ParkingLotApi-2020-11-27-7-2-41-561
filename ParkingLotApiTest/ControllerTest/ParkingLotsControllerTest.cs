@@ -25,14 +25,18 @@ namespace ParkingLotApiTest.ControllerTest
         [Fact]
         public async Task Should_add_parkingLot_when_add_parkingLot_with_unique_name()
         {
+            // given
             var client = GetClient();
             ParkingLotDto parkingLotDto = GenerateParkingLotDto();
             var httpContent = JsonConvert.SerializeObject(parkingLotDto);
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+            // when
             var response = await client.PostAsync("/ParkingLots", content);
             var responseBody = await response.Content.ReadAsStringAsync();
             var responseParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(responseBody);
 
+            // then
             Assert.Equal(parkingLotDto.Name, responseParkingLot.Name);
         }
 
@@ -68,6 +72,7 @@ namespace ParkingLotApiTest.ControllerTest
             var responseBody = await response.Content.ReadAsStringAsync();
             var responseParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(responseBody);
 
+            // then
             Assert.True(response.StatusCode == HttpStatusCode.OK);
             Assert.Equal(parkingLotDto.Name, responseParkingLot.Name);
         }
@@ -84,8 +89,34 @@ namespace ParkingLotApiTest.ControllerTest
             var responseBody = await response.Content.ReadAsStringAsync();
             var responseParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(responseBody);
 
+            // then
             Assert.True(response.StatusCode == HttpStatusCode.OK);
             Assert.Null(responseParkingLot.Name);
+        }
+
+        [Fact]
+        public async Task Should_delete_parkingLot_when_delete_parkingLot_by_name()
+        {
+            // given
+            var client = GetClient();
+            ParkingLotDto parkingLotDto = GenerateParkingLotDto();
+            var httpContent = JsonConvert.SerializeObject(parkingLotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            await client.PostAsync("/ParkingLots", content);
+            var response = await client.GetAsync($"/ParkingLots/{parkingLotDto.Name}");
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var responseParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(responseBody);
+            Assert.Equal(parkingLotDto.Name, responseParkingLot.Name);
+
+            // when
+            var deleteResponse = await client.DeleteAsync($"/ParkingLots/{parkingLotDto.Name}");
+            var getResponse = await client.GetAsync($"/ParkingLots/{parkingLotDto.Name}");
+            var getResponseBody = await getResponse.Content.ReadAsStringAsync();
+            var responseParkingLotAfterDelete = JsonConvert.DeserializeObject<ParkingLotDto>(getResponseBody);
+
+            // then
+            Assert.True(deleteResponse.StatusCode == HttpStatusCode.NoContent);
+            Assert.Null(responseParkingLotAfterDelete.Name);
         }
 
         private static ParkingLotDto GenerateParkingLotDto()
