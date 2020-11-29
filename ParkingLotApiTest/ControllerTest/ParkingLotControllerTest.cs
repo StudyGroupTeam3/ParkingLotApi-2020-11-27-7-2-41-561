@@ -19,6 +19,28 @@ namespace ParkingLotApiTest.ControllerTest
     {
         private HttpClient client;
         private ParkingLotContext parkingLotContext;
+        private ParkingLotService parkingLotService;
+        private List<ParkingLotDto> parkingLotDtos = new List<ParkingLotDto>()
+        {
+            new ParkingLotDto
+            {
+                Name = "NO.1",
+                Capacity = 10,
+                Location = "Area1",
+            },
+            new ParkingLotDto
+            {
+                Name = "NO.2",
+                Capacity = 10,
+                Location = "Area2",
+            },
+            new ParkingLotDto
+            {
+                Name = "NO.3",
+                Capacity = 10,
+                Location = "Area3",
+            },
+        };
 
         public ParkingLotControllerTest(CustomWebApplicationFactory<Startup> factory) : base(factory)
         {
@@ -27,6 +49,8 @@ namespace ParkingLotApiTest.ControllerTest
             var scope = Factory.Services.CreateScope();
             var scopedServices = scope.ServiceProvider;
             parkingLotContext = scopedServices.GetRequiredService<ParkingLotContext>();
+
+            parkingLotService = new ParkingLotService(parkingLotContext);
         }
 
         [Fact]
@@ -37,7 +61,7 @@ namespace ParkingLotApiTest.ControllerTest
             {
                 Name = "NO.1",
                 Capacity = 10,
-                Location = "Area1"
+                Location = "Area1",
             };
 
             // when
@@ -59,7 +83,7 @@ namespace ParkingLotApiTest.ControllerTest
             ParkingLotDto parkingLotDto = new ParkingLotDto
             {
                 Name = "NO.1",
-                Capacity = 10
+                Capacity = 10,
             };
 
             // when
@@ -116,41 +140,24 @@ namespace ParkingLotApiTest.ControllerTest
         public async Task Should_return_parking_lot_dto_specified_By_id_when_GET_GetParkingLotsById()
         {
             // given
-            parkingLotContext.Database.EnsureDeleted();
-            parkingLotContext.Database.EnsureCreated();
-            var parkingLotService = new ParkingLotService(parkingLotContext);
-
-            ParkingLotDto parkingLotDto1 = new ParkingLotDto
-            {
-                Name = "NO.1",
-                Capacity = 10,
-                Location = "Area1"
-            };
-            await parkingLotService.AddParkingLot(parkingLotDto1);
-
-            ParkingLotDto parkingLotDto2 = new ParkingLotDto
-            {
-                Name = "NO.2",
-                Capacity = 10,
-                Location = "Area2"
-            };
-            await parkingLotService.AddParkingLot(parkingLotDto2);
-
-            ParkingLotDto parkingLotDto3 = new ParkingLotDto
-            {
-                Name = "NO.3",
-                Capacity = 10,
-                Location = "Area3"
-            };
-            await parkingLotService.AddParkingLot(parkingLotDto3);
+            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
 
             // when
-            var response = await client.GetAsync("/parkinglots/2");
+            var response = await client.GetAsync($"/parkinglots/{parkingLotIds[1]}");
             response.EnsureSuccessStatusCode();
 
             // then
             var actualParkingLotDtos = JsonConvert.DeserializeObject<ParkingLotDto>(await response.Content.ReadAsStringAsync());
-            Assert.Equal(parkingLotDto2, actualParkingLotDtos);
+            Assert.Equal(parkingLotDtos[1], actualParkingLotDtos);
+        }
+
+        private List<int> AddThreeParkingLotsIntoDB()
+        {
+            parkingLotContext.Database.EnsureDeleted();
+            parkingLotContext.Database.EnsureCreated();
+            List<int> parkingLotIds = new List<int>();
+            parkingLotDtos.ForEach(async parkingLotDto => parkingLotIds.Add(await parkingLotService.AddParkingLot(parkingLotDto)));
+            return parkingLotIds;
         }
     }
 }

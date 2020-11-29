@@ -41,10 +41,8 @@ namespace ParkingLotApi.Controllers
             {
                 return NotFound();
             }
-            else
-            {
-                return Ok(parkingLotDto);
-            }
+
+            return Ok(parkingLotDto);
         }
     }
 }
