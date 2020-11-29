@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using ParkingLotApi.Dtos;
@@ -20,9 +21,11 @@ namespace ParkingLotApi.Entities
             this.Location = parkingLotDto.Location;
         }
 
-        public int Id { get; set; }
+        [Key]
         public string Name { get; set; }
-        public int? Capacity { get; set; } = 0;
+        public int? Capacity { get; set; }
         public string Location { get; set; }
+        [ForeignKey("ParkingLotName")]
+        public List<ParkingOrderEntity> Orders { get; set; }
     }
 }
