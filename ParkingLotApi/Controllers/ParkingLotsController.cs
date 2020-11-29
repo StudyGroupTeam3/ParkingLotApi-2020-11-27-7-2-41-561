@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ParkingLotApi.Dtos;
+using ParkingLotApi.Services;
 
 namespace ParkingLotApi.Controllers
 {
@@ -11,5 +13,41 @@ namespace ParkingLotApi.Controllers
     [ApiController]
     public class ParkingLotsController : ControllerBase
     {
+        private readonly ParkingLotService parkingLotService;
+
+        public ParkingLotsController(ParkingLotService parkingLotService)
+        {
+            this.parkingLotService = parkingLotService;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<ParkingLotDto>> AddParkingLot(ParkingLotDto parkingLotDto)
+        {
+            return null;
+        }
+
+        [HttpDelete("{name}")]
+        public async Task<ActionResult> DeleteParkingLot(string parkingLotName)
+        {
+            return this.NoContent();
+        }
+
+        [HttpGet("/pages/{index}")]
+        public async Task<ActionResult<List<ParkingLotDto>>> GetParkingLotByPageIndex(int pageIndex)
+        {
+            return null;
+        }
+
+        [HttpGet("/{name}")]
+        public async Task<ActionResult<ParkingLotDto>> GetParkingLotByName(string parkingLotName)
+        {
+            return null;
+        }
+
+        [HttpPatch("/{name}")]
+        public async Task<ActionResult<ParkingLotDto>> UpdateParkingLotCapacity(string parkingLotName)
+        {
+            return null;
+        }
     }
 }

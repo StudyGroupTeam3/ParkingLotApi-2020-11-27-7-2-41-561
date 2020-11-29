@@ -33,7 +33,7 @@ namespace ParkingLotApiTest.ControllerTest
             var parkingLotName = await parkingLotService.AddParkingLot(parkingLotDto);
             var foundParkingLot = await context.ParkingLots.FirstOrDefaultAsync(parkingLotEntity => parkingLotEntity.Name == parkingLotName);
 
-            Assert.Equal(2, context.ParkingLots.Count());
+            Assert.Equal(1, context.ParkingLots.Count());
             Assert.Equal(parkingLotDto.Name, foundParkingLot.Name);
         }
 
@@ -51,11 +51,29 @@ namespace ParkingLotApiTest.ControllerTest
             var parkingLotName = await parkingLotService.AddParkingLot(parkingLotDto);
             var foundParkingLot = await context.ParkingLots.FirstOrDefaultAsync(parkingLotEntity => parkingLotEntity.Name == parkingLotName);
 
-            Assert.Equal(4, context.ParkingLots.Count());
+            Assert.Equal(1, context.ParkingLots.Count());
 
             var parkingLotNameTwo = await parkingLotService.AddParkingLot(parkingLotDto);
             Assert.Null(parkingLotNameTwo);
         }
+
+        //[Fact]
+        //public async Task Should_get_parkingLots_in_one_page_when_get_parkingLots_by_page_index_via_parkingLotService()
+        //{
+        //    var scope = Factory.Services.CreateScope();
+        //    var scopedServices = scope.ServiceProvider;
+
+        //    ParkingLotContext context = scopedServices.GetRequiredService<ParkingLotContext>();
+        //    var parkingLotDto = GenerateParkingLotDto();
+
+        //    ParkingLotService parkingLotService = new ParkingLotService(context);
+
+        //    var parkingLotName = await parkingLotService.AddParkingLot(parkingLotDto);
+        //    var foundParkingLot = await parkingLotService.GetParkingLotByName(parkingLotName);
+
+        //    Assert.Equal(1, context.ParkingLots.Count());
+        //    Assert.Equal(parkingLotDto.Name, foundParkingLot.Name);
+        //}
 
         [Fact]
         public async Task Should_get_parkingLot_when_get_parkingLot_by_name_via_parkingLotService()
