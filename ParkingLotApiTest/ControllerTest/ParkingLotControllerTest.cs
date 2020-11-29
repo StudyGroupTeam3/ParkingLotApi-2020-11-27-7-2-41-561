@@ -55,7 +55,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_ok_with_parking_lot_id_when_POST_AddParkingLot()
+        public async Task Should_return_201_with_parking_lot_id_in_location_when_POST_AddParkingLot()
         {
             // given
             ParkingLotDto parkingLotDto = new ParkingLotDto
@@ -72,7 +72,9 @@ namespace ParkingLotApiTest.ControllerTest
             response.EnsureSuccessStatusCode();
 
             // then
-            int parkingLotId = int.Parse(await response.Content.ReadAsStringAsync());
+            var parkingLotUrl = response.Headers.Location;
+            var parkingLotId = int.Parse(parkingLotUrl.ToString().Split('/').Last());
+            Assert.Equal($"http://localhost/parkinglots/{parkingLotId}", parkingLotUrl.ToString());
             var actualParkingLotDto = new ParkingLotDto(parkingLotContext.ParkingLots.Find(parkingLotId));
             Assert.Equal(parkingLotDto, actualParkingLotDto);
         }

@@ -24,7 +24,7 @@ namespace ParkingLotApi.Controllers
         public async Task<ActionResult<int>> AddParkingLot(ParkingLotDto parkingLotDto)
         {
             int parkingLotId = await this.parkingLotService.AddParkingLot(parkingLotDto);
-            return Ok(parkingLotId);
+            return CreatedAtAction(nameof(GetParkingLotsById), new { parkingLotId = parkingLotId }, parkingLotDto);
         }
 
         [HttpGet("parkinglots")]
