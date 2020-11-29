@@ -17,6 +17,7 @@ namespace ParkingLotApi.Entities
             Name = parkingLot.Name;
             Capacity = parkingLot.Capacity;
             Location = parkingLot.Location;
+            Orders = new List<OrderEntity>();
         }
 
         [Key]

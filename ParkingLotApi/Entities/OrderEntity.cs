@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ParkingLotApi.Dtos;
 
 namespace ParkingLotApi.Entities
 {
@@ -16,6 +17,13 @@ namespace ParkingLotApi.Entities
     {
         public OrderEntity()
         {
+        }
+
+        public OrderEntity(OrderRequest order)
+        {
+            ParkingLotName = order.ParkingLotName;
+            PlateNumber = order.PlateNumber;
+            CreationTime = DateTime.Now;
         }
 
         public Status Status { get; set; }

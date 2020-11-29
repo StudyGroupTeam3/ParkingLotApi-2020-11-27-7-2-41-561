@@ -1,26 +1,35 @@
 ﻿using System;
-using System.ComponentModel;
+using ParkingLotApi.Entities;
 
 namespace ParkingLotApi.Dtos
 {
-    [DefaultValue(Open)]
-    public enum Status
-    {
-        Open,
-        Close
-    }
-
     public class Order
     {
         public Order()
         {
         }
 
-        public Status Status { get; set; }
+        public Order(OrderEntity orderEntity)
+        {
+            OrderNumber = orderEntity.OrderNumber;
+            ParkingLotName = orderEntity.ParkingLotName;
+            PlateNumber = orderEntity.PlateNumber;
+            CreationTime = orderEntity.CreationTime;
+        }
+
         public int OrderNumber { get; set; }
         public string ParkingLotName { get; set; }
         public string PlateNumber { get; set; }
         public DateTime CreationTime { get; set; }
-        public DateTime CloseTime { get; set; }
+
+        public override bool Equals(object? other)
+        {
+            var order = (Order)other;
+            return order != null &&
+                   (order.ParkingLotName == ParkingLotName
+                    && order.PlateNumber == PlateNumber
+                    && order.OrderNumber == OrderNumber
+                    && order.CreationTime == CreationTime);
+        }
     }
 }

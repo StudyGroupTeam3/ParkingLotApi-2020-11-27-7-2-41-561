@@ -43,8 +43,8 @@ namespace ParkingLotApiTest.ServiceTest
             var parkingLot = new ParkingLot("Lot1", 10, "location1");
 
             // when
-            var id = await service.AddParkingLot(parkingLot);
-            await service.DeleteParkingLot(id);
+            var name = await service.AddParkingLot(parkingLot);
+            await service.DeleteParkingLot(name);
 
             // then
             Assert.Equal(0, context.ParkingLots.CountAsync().Result);

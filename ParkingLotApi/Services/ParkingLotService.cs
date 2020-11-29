@@ -47,6 +47,14 @@ namespace ParkingLotApi.Services
             return parkingLotEntities.Select(lot => new ParkingLot(lot)).ToList();
         }
 
+        public async Task<int> GetParkingLotEmptyPositionByName(string name)
+        {
+            var lotFound = await context.ParkingLots.Include(lot => lot.Orders)
+                .FirstOrDefaultAsync(lot => lot.Name == name);
+
+            return lotFound.Capacity - lotFound.Orders.Count;
+        }
+
         public async Task<List<ParkingLot>> GetAllParkingLots(int page)
         {
             const int chunkSize = 15;
