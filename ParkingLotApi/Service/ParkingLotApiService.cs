@@ -74,16 +74,11 @@ namespace ParkingLotApi.Service
 
         public async Task<int> ChangeCapacity(UpdateModel updateModel)
         {
-            var parkingLots = await GetAll();
-            foreach (var parkingLot in parkingLots)
-            {
-                if (parkingLot.Name == updateModel.Name)
-                {
-                    parkingLot.Capacity = updateModel.Capacity;
-                }
-            }
-
-            return parkingLots.FirstOrDefault(parkingLot => parkingLot.Name == updateModel.Name).Capacity;
+            var parkingLots = await parkingLotDbContext.Parkinglots.ToListAsync();
+            var targetParkinglot = parkingLots.FirstOrDefault(parkingLot => parkingLot.Name == updateModel.Name);
+            targetParkinglot.Capacity = updateModel.Capacity;
+            await parkingLotDbContext.SaveChangesAsync();
+            return targetParkinglot.Capacity;
         }
     }
 }

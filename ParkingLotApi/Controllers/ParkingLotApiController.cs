@@ -81,5 +81,11 @@ namespace ParkingLotApi.Controllers
 
             return this.NoContent();
         }
+
+        [HttpPatch("ParkingLots")]
+        public async Task<ActionResult<int>> ChangeCapacity(UpdateModel updateModel)
+        {
+            return Ok(await parkingLotService.ChangeCapacity(updateModel));
+        }
     }
 }
