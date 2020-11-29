@@ -63,7 +63,9 @@ namespace ParkingLotApi.Services
         public async Task<ParkingLotDto> UpdateById(int id, UpdateParkingLotDto updateParkingLotDto)
         {
             var foundParkingLotEntity = await this.parkingLotContext.ParkingLot.FirstOrDefaultAsync(parkingLotEntity => parkingLotEntity.Id == id);
-            foundParkingLotEntity.Capacity = updateParkingLotDto.Capacity;
+            UpdateParkingLotEntity updateParkingLotEntity = new UpdateParkingLotEntity(updateParkingLotDto);
+            foundParkingLotEntity.Capacity = updateParkingLotEntity.Capacity;
+            await this.parkingLotContext.SaveChangesAsync();
             return new ParkingLotDto(foundParkingLotEntity);
         }
     }

@@ -13,11 +13,11 @@ namespace ParkingLotApi.Dtos
         {
         }
 
-        public UpdateParkingLotDto(ParkingLotEntity parkingLotEntity)
+        public UpdateParkingLotDto(UpdateParkingLotEntity updateParkingLotEntity)
         {
-            this.Name = parkingLotEntity.Name;
-            this.Capacity = parkingLotEntity.Capacity;
-            this.Location = parkingLotEntity.Location;
+            this.Name = updateParkingLotEntity.Name;
+            this.Capacity = updateParkingLotEntity.Capacity;
+            this.Location = updateParkingLotEntity.Location;
         }
 
         public string Name { get; set; }
