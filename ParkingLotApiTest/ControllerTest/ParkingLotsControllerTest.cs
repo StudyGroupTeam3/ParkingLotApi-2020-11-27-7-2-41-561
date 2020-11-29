@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
@@ -169,6 +170,51 @@ namespace ParkingLotApiTest.ControllerTest
 
             // then
             Assert.Equal(updateParkingLotCapacityDto.Capacity, changedParkingLot.Capacity);
+        }
+
+        [Fact]
+        public async Task Should_not_update_parkingLot_capacity_when_update_parkingLot_not_exist()
+        {
+            // given
+            var client = GetClient();
+            UpdateParkingLotCapacityDto updateParkingLotCapacityDto = new UpdateParkingLotCapacityDto(10);
+            var httpPatchContent = JsonConvert.SerializeObject(updateParkingLotCapacityDto);
+            StringContent patchContent = new StringContent(httpPatchContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var parkingLotName = "ha";
+
+            // when
+            var patchResponse = await client.PatchAsync($"/ParkingLots/{parkingLotName}", patchContent);
+            var patchResponseBody = await patchResponse.Content.ReadAsStringAsync();
+            var changedParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(patchResponseBody);
+
+            // then
+            Assert.Null(changedParkingLot);
+        }
+
+        [Fact]
+        public async Task Should_get_parkingLots_by_page_index_when_get_parkingLots_by_page_index()
+        {
+            // given
+            var client = GetClient();
+            for (var i = 0; i < 20; i++)
+            {
+                ParkingLotDto parkingLotDto = GenerateParkingLotDto();
+                parkingLotDto.Capacity = i;
+                parkingLotDto.Location = "AmazingStreetNo." + i;
+                var httpContent = JsonConvert.SerializeObject(parkingLotDto);
+                StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+                await client.PostAsync("/ParkingLots", content);
+            }
+
+            var pageIndex = 1;
+
+            // when
+            var response = await client.GetAsync($"/ParkingLots/pages/{pageIndex}");
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var parkingLots = JsonConvert.DeserializeObject<List<ParkingLotDto>>(responseBody);
+
+            // then
+            Assert.Equal(15, parkingLots.Count);
         }
 
         private static ParkingLotDto GenerateParkingLotDto()
