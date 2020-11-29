@@ -83,5 +83,50 @@ namespace ParkingLotApiTest
             // then
             Assert.Equal(new List<ParkingLotDto>() { parkingLotDto3 }, actualParkingLotDtos);
         }
+
+        [Fact]
+        public async Task Should_return_specified_parking_lot_dto_when_GetParkingLotById()
+        {
+            // given
+            parkingLotContext.Database.EnsureDeleted();
+            parkingLotContext.Database.EnsureCreated();
+            var parkingLotService = new ParkingLotService(parkingLotContext);
+
+            ParkingLotDto parkingLotDto1 = new ParkingLotDto
+            {
+                Name = "NO.1",
+                Capacity = 10,
+                Location = "Area1"
+            };
+            await parkingLotService.AddParkingLot(parkingLotDto1);
+
+            ParkingLotDto parkingLotDto2 = new ParkingLotDto
+            {
+                Name = "NO.2",
+                Capacity = 10,
+                Location = "Area2"
+            };
+            await parkingLotService.AddParkingLot(parkingLotDto2);
+
+            ParkingLotDto parkingLotDto3 = new ParkingLotDto
+            {
+                Name = "NO.3",
+                Capacity = 10,
+                Location = "Area3"
+            };
+            await parkingLotService.AddParkingLot(parkingLotDto3);
+
+            // when
+            var actualParkingLotDtoNotNull = await parkingLotService.GetParkingLotById(2);
+
+            // then
+            Assert.Equal(parkingLotDto2, actualParkingLotDtoNotNull);
+
+            // when
+            var actualParkingLotDtoNull = await parkingLotService.GetParkingLotById(4);
+
+            // then
+            Assert.Null(actualParkingLotDtoNull);
+        }
     }
 }

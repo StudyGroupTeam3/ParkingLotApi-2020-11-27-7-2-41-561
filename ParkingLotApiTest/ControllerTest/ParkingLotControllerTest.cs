@@ -18,7 +18,6 @@ namespace ParkingLotApiTest.ControllerTest
     {
         private HttpClient client;
         private ParkingLotContext parkingLotContext;
-        private ParkingLotService parkingLotService;
 
         public ParkingLotControllerTest(CustomWebApplicationFactory<Startup> factory) : base(factory)
         {
@@ -91,6 +90,47 @@ namespace ParkingLotApiTest.ControllerTest
             // then
             var actualParkingLotDtos = JsonConvert.DeserializeObject<List<ParkingLotDto>>(await response.Content.ReadAsStringAsync());
             Assert.Equal(new List<ParkingLotDto>() { parkingLotDto3 }, actualParkingLotDtos);
+        }
+
+        [Fact]
+        public async Task Should_return_parking_lot_dto_specified_By_id_when_GET_GetParkingLotsById()
+        {
+            // given
+            parkingLotContext.Database.EnsureDeleted();
+            parkingLotContext.Database.EnsureCreated();
+            var parkingLotService = new ParkingLotService(parkingLotContext);
+
+            ParkingLotDto parkingLotDto1 = new ParkingLotDto
+            {
+                Name = "NO.1",
+                Capacity = 10,
+                Location = "Area1"
+            };
+            await parkingLotService.AddParkingLot(parkingLotDto1);
+
+            ParkingLotDto parkingLotDto2 = new ParkingLotDto
+            {
+                Name = "NO.2",
+                Capacity = 10,
+                Location = "Area2"
+            };
+            await parkingLotService.AddParkingLot(parkingLotDto2);
+
+            ParkingLotDto parkingLotDto3 = new ParkingLotDto
+            {
+                Name = "NO.3",
+                Capacity = 10,
+                Location = "Area3"
+            };
+            await parkingLotService.AddParkingLot(parkingLotDto3);
+
+            // when
+            var response = await client.GetAsync("/parkinglots/2");
+            response.EnsureSuccessStatusCode();
+
+            // then
+            var actualParkingLotDtos = JsonConvert.DeserializeObject<ParkingLotDto>(await response.Content.ReadAsStringAsync());
+            Assert.Equal(parkingLotDto2, actualParkingLotDtos);
         }
     }
 }

@@ -31,5 +31,11 @@ namespace ParkingLotApi.Services
             var parkingLotEntities = await parkingLotContext.ParkingLots.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToListAsync();
             return parkingLotEntities.Select(parkingLotEntity => new ParkingLotDto(parkingLotEntity)).ToList();
         }
+
+        public async Task<ParkingLotDto> GetParkingLotById(int parkingLotId)
+        {
+            var parkingLotEntity = await parkingLotContext.ParkingLots.FindAsync(parkingLotId);
+            return parkingLotEntity is null ? null : new ParkingLotDto(parkingLotEntity);
+        }
     }
 }

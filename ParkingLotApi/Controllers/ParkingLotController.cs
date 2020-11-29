@@ -32,5 +32,19 @@ namespace ParkingLotApi.Controllers
         {
             return Ok(await this.parkingLotService.GetParkingLotsByPage(pageSize, pageIndex));
         }
+
+        [HttpGet("parkinglots/{parkingLotId:int}")]
+        public async Task<ActionResult<ParkingLotDto>> GetParkingLotsById(int parkingLotId)
+        {
+            var parkingLotDto = await this.parkingLotService.GetParkingLotById(parkingLotId);
+            if (parkingLotDto is null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(parkingLotDto);
+            }
+        }
     }
 }
