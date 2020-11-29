@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ParkingLotApi.Repository;
+using ParkingLotApi.Services;
 
 namespace ParkingLotApi
 {
@@ -27,12 +28,13 @@ namespace ParkingLotApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = false);
             services.AddSwaggerGen();
             services.AddDbContext<ParkingLotContext>(options =>
             {
                 options.UseMySql(Configuration.GetConnectionString("Default"));
             });
+            services.AddScoped<ParkingLotService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
