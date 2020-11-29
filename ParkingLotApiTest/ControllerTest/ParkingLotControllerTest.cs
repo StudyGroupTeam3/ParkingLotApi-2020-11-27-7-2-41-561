@@ -194,6 +194,20 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
+        [Fact]
+        public async Task Should_return_400_if_does_not_provided_capacity_when_PATCH_UpdateParkingLotCapacityById()
+        {
+            // given
+            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+
+            // when
+            var httpContent = new StringContent(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var response = await client.PatchAsync($"/parkinglots/{parkingLotIds[1]}", httpContent);
+
+            // then
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
         private List<int> AddThreeParkingLotsIntoDB()
         {
             parkingLotContext.Database.EnsureDeleted();
