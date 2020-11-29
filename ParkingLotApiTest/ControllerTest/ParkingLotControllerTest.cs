@@ -58,6 +58,8 @@ namespace ParkingLotApiTest.ControllerTest
         public async Task Should_return_201_with_parking_lot_id_in_location_when_POST_AddParkingLot()
         {
             // given
+            parkingLotContext.Database.EnsureDeleted();
+            parkingLotContext.Database.EnsureCreated();
             ParkingLotDto parkingLotDto = new ParkingLotDto
             {
                 Name = "NO.1",
@@ -83,6 +85,8 @@ namespace ParkingLotApiTest.ControllerTest
         public async Task Should_return_400_if_not_all_required_property_is_provided_when_POST_AddParkingLot()
         {
             // given
+            parkingLotContext.Database.EnsureDeleted();
+            parkingLotContext.Database.EnsureCreated();
             ParkingLotDto parkingLotDto = new ParkingLotDto
             {
                 Name = "NO.1",
@@ -96,6 +100,28 @@ namespace ParkingLotApiTest.ControllerTest
 
             // then
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_return_400_parking_lot_name_already_exists_when_POST_AddParkingLot()
+        {
+            // given
+            AddThreeParkingLotsIntoDB();
+            ParkingLotDto parkingLotDto = new ParkingLotDto
+            {
+                Name = "NO.1",
+                Capacity = 10,
+                Location = "Area1",
+            };
+
+            // when
+            var httpContent = JsonConvert.SerializeObject(parkingLotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var response = await client.PostAsync("/parkinglots", content);
+
+            // then
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("Parking lot name already exists!", await response.Content.ReadAsStringAsync());
         }
 
         [Fact]

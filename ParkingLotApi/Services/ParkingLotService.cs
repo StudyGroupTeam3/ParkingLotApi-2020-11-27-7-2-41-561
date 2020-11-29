@@ -62,5 +62,15 @@ namespace ParkingLotApi.Services
             parkingLotEntity.Capacity = parkingLotCapacityUpdateModel.Capacity;
             return new ParkingLotDto(parkingLotEntity);
         }
+
+        public bool IsParkingLotNameExisting(string name)
+        {
+            if (parkingLotContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Name == name) is null)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

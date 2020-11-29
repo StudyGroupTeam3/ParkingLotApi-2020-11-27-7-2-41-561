@@ -23,6 +23,11 @@ namespace ParkingLotApi.Controllers
         [HttpPost("parkinglots")]
         public async Task<ActionResult<int>> AddParkingLot(ParkingLotDto parkingLotDto)
         {
+            if (parkingLotService.IsParkingLotNameExisting(parkingLotDto.Name))
+            {
+                return BadRequest("Parking lot name already exists!");
+            }
+
             int parkingLotId = await this.parkingLotService.AddParkingLot(parkingLotDto);
             return CreatedAtAction(nameof(GetParkingLotById), new { parkingLotId = parkingLotId }, parkingLotDto);
         }
