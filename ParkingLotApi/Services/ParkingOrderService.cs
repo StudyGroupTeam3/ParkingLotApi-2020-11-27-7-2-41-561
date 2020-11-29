@@ -33,12 +33,14 @@ namespace ParkingLotApi.Services
             return parkingOrderEntities;
         }
 
-        public async Task<ParkingOrderDto> GetOrderByNumber(string number)
+        public async Task<ParkingOrderDto> GetParkingOrderByOrderNumber(string orderNumber)
         {
-            //var orderEntity = await parkingLotContext.ParkingOrders.FirstOrDefaultAsync(order => order.OrderNumber == number);
-
-            //return new ParkingOrderDto(orderEntity);
-            return null;
+            var parkingOrderEntity = await parkingLotContext.ParkingOrders.FirstOrDefaultAsync(parkingOrder => parkingOrder.OrderNumber == orderNumber);
+            var parkingOrder = new ParkingOrderDto(parkingOrderEntity)
+            {
+                OrderNumber = parkingOrderEntity.OrderNumber,
+            };
+            return parkingOrder;
         }
 
         public async Task UpdateOrder(string number, UpdateParkingOrderDto data)

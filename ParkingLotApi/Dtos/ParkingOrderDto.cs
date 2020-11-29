@@ -27,5 +27,20 @@ namespace ParkingLotApi.Dtos
         public DateTime CreateTime { get; set; }
         public DateTime CloseTime { get; set; }
         public string OrderStatus { get; set; } = "open";
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || !(obj is ParkingOrderDto))
+            {
+                return false;
+            }
+
+            ParkingOrderDto parkingOrder = (ParkingOrderDto)obj;
+            return parkingOrder.OrderNumber == OrderNumber && parkingOrder.ParkingLotName == ParkingLotName
+                                                           && parkingOrder.PlateNumber == PlateNumber
+                                                           && parkingOrder.OrderStatus == OrderStatus
+                                                           && parkingOrder.CreateTime == CreateTime
+                                                           && parkingOrder.CloseTime == CloseTime;
+        }
     }
 }

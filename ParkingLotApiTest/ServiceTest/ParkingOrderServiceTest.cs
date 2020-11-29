@@ -20,24 +20,26 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_add_parkingOrder_when_add_parkingOrder_via_parkingLotService()
+        public async Task Should_add_parkingOrder_when_add_parkingOrder_via_parkingOrderService()
         {
+            // given
             var scope = Factory.Services.CreateScope();
             var scopedServices = scope.ServiceProvider;
-
             ParkingLotContext context = scopedServices.GetRequiredService<ParkingLotContext>();
             var parkingOrderDto = GenerateParkingOrderDto();
-
             ParkingOrderService parkingOrderService = new ParkingOrderService(context);
+
+            // when
             var parkingOrderNumber = await parkingOrderService.AddParkingOrder(parkingOrderDto);
             var foundParkingOrder = await context.ParkingOrders.FirstOrDefaultAsync(parkingOrderEntity => parkingOrderEntity.OrderNumber == parkingOrderNumber);
 
+            // then
             Assert.Equal(1, context.ParkingOrders.Count());
             Assert.Equal(parkingOrderDto.OrderNumber, foundParkingOrder.OrderNumber);
         }
 
         [Fact]
-        public async Task Should_get_all_parkingOrders_when_get_parkingOrders_via_parkingLotService()
+        public async Task Should_get_all_parkingOrders_when_get_parkingOrders_via_parkingOrderService()
         {
             // given
             var scope = Factory.Services.CreateScope();
@@ -53,7 +55,29 @@ namespace ParkingLotApiTest.ControllerTest
             // when
             var allParkingOrders = await parkingOrderService.GetAllParkingOrders();
 
+            // then
             Assert.Equal(5, allParkingOrders.Count());
+        }
+
+        [Fact]
+        public async Task Should_get_correct_parkingOrder_when_get_parkingOrder_via_parkingOrderService()
+        {
+            // given
+            var scope = Factory.Services.CreateScope();
+            var scopedServices = scope.ServiceProvider;
+            ParkingLotContext context = scopedServices.GetRequiredService<ParkingLotContext>();
+            ParkingOrderService parkingOrderService = new ParkingOrderService(context);
+            var parkingOrderDtoList = GenerateParkingOrderDtoList();
+            foreach (var parkingOrderDto in parkingOrderDtoList)
+            {
+                await parkingOrderService.AddParkingOrder(parkingOrderDto);
+            }
+
+            // when
+            var parkingOrder = await parkingOrderService.GetParkingOrderByOrderNumber(parkingOrderDtoList[0].OrderNumber);
+
+            // then
+            Assert.Equal(parkingOrderDtoList[0], parkingOrder);
         }
 
         private ParkingOrderDto GenerateParkingOrderDto()
@@ -73,7 +97,7 @@ namespace ParkingLotApiTest.ControllerTest
             {
                 ParkingOrderDto parkingOrderDto = new ParkingOrderDto
                 {
-                    ParkingLotName = "No" + i,
+                    ParkingLotName = "No." + i,
                     PlateNumber = "JA888" + i,
                 };
                 parkingOrderDtoList.Add(parkingOrderDto);
