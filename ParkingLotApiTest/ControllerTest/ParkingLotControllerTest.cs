@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
@@ -123,6 +124,34 @@ namespace ParkingLotApiTest.ControllerTest
             // then
             var actualParkingLotDtos = JsonConvert.DeserializeObject<ParkingLotDto>(await response.Content.ReadAsStringAsync());
             Assert.Equal(parkingLotDtos[1], actualParkingLotDtos);
+        }
+
+        [Fact]
+        public async Task Should_return_deleted_parking_lot_dto_specified_By_id_when_DELETE_DeleteParkingLotsById()
+        {
+            // given
+            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+
+            // when
+            var response = await client.DeleteAsync($"/parkinglots/{parkingLotIds[1]}");
+            response.EnsureSuccessStatusCode();
+
+            // then
+            var actualParkingLotDtos = JsonConvert.DeserializeObject<ParkingLotDto>(await response.Content.ReadAsStringAsync());
+            Assert.Equal(parkingLotDtos[1], actualParkingLotDtos);
+        }
+
+        [Fact]
+        public async Task Should_return_404_if_parking_lot_id_does_not_exist_when_DELETE_DeleteParkingLotsById()
+        {
+            // given
+            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+
+            // when
+            var response = await client.DeleteAsync($"/parkinglots/{parkingLotIds.Last() + 1}");
+
+            // then
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         private List<int> AddThreeParkingLotsIntoDB()

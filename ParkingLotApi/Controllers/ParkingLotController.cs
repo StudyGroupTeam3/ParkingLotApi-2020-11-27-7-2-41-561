@@ -44,5 +44,17 @@ namespace ParkingLotApi.Controllers
 
             return Ok(parkingLotDto);
         }
+
+        [HttpDelete("parkinglots/{parkingLotId:int}")]
+        public async Task<ActionResult<ParkingLotDto>> DeleteParkingLotsById(int parkingLotId)
+        {
+            var parkingLotDto = await this.parkingLotService.DeleteParkingLotById(parkingLotId);
+            if (parkingLotDto is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(parkingLotDto);
+        }
     }
 }
