@@ -31,5 +31,12 @@ namespace ParkingLotApi.Controllers
             var actualParkingOrderDto = await parkService.ParkCar(parkingOrderDto);
             return Ok(actualParkingOrderDto);
         }
+
+        [HttpPatch("parking")]
+        public async Task<ActionResult> Leave(ParkingOrderDto parkingOrderDto)
+        {
+            await parkService.Leave(parkingOrderDto);
+            return Ok();
+        }
     }
 }

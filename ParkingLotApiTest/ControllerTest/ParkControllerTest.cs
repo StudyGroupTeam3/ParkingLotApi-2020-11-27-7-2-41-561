@@ -36,7 +36,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_created_parking_order_when_POST_park_car()
+        public async Task Should_POST_return_created_parking_order_when_park_car()
         {
             // given
             parkingLotContext.Database.EnsureDeleted();
@@ -77,7 +77,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_400_and_no_parking_order_be_created_when_POST_there_is_no_free_space_in_parking_lot()
+        public async Task Should_POST_return_400_and_no_parking_order_be_created_when_there_is_no_free_space_in_parking_lot()
         {
             // given
             parkingLotContext.Database.EnsureDeleted();
@@ -132,6 +132,74 @@ namespace ParkingLotApiTest.ControllerTest
             // then
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.Equal(2, parkingLotContext.ParkingOrders.Count());
+        }
+
+        [Fact]
+        public async Task Should_PATCH_return_200_change_parking_order_status_to_false_when__leave()
+        {
+            // given
+            parkingLotContext.Database.EnsureDeleted();
+            parkingLotContext.Database.EnsureCreated();
+            List<ParkingLotEntity> parkingLots = new List<ParkingLotEntity>()
+            {
+                new ParkingLotEntity
+                {
+                    Name = "NO.1",
+                    Capacity = 2,
+                    Location = "Area1",
+                },
+            };
+            parkingLots.ForEach(parkingLot =>
+            {
+                parkingLotContext.ParkingLots.Add(parkingLot);
+                parkingLotContext.SaveChanges();
+            });
+            List<ParkingOrderEntity> parkingOrders = new List<ParkingOrderEntity>()
+            {
+                new ParkingOrderEntity
+                {
+                    NameOfParkingLot = "NO.1",
+                    PlateNumber = "ABC000",
+                    CreationTime = DateTime.Now,
+                    OrderStatus = true,
+                },
+                new ParkingOrderEntity
+                {
+                    NameOfParkingLot = "NO.1",
+                    PlateNumber = "ABC001",
+                    CreationTime = DateTime.Now,
+                    OrderStatus = true,
+                },
+            };
+            parkingOrders.ForEach(parkingOrder =>
+            {
+                parkingLotContext.ParkingOrders.Add(parkingOrder);
+                parkingLotContext.SaveChanges();
+            });
+
+            var parkingOrderDto = new ParkingOrderDto
+            {
+                NameOfParkingLot = "NO.1",
+                PlateNumber = "ABC000",
+            };
+            // when
+            var httpContent = JsonConvert.SerializeObject(parkingOrderDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var response = await client.PatchAsync("/parking", content);
+
+            // then
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var matchedParkingOrderClosed = parkingLotContext.ParkingOrders.Where(
+              parkingOrder => parkingOrder.NameOfParkingLot == parkingOrderDto.NameOfParkingLot &&
+                              parkingOrder.PlateNumber == parkingOrderDto.PlateNumber &&
+                              parkingOrder.OrderStatus == false &&
+                              parkingOrder.CloseTime > parkingOrder.CreationTime).ToList();
+            Assert.Single(matchedParkingOrderClosed);
+            var matchedParkingOrderOpen = parkingLotContext.ParkingOrders.Where(
+              parkingOrder => parkingOrder.NameOfParkingLot == parkingOrderDto.NameOfParkingLot &&
+                              parkingOrder.PlateNumber == parkingOrderDto.PlateNumber &&
+                              parkingOrder.OrderStatus == true).ToList();
+            Assert.Empty(matchedParkingOrderOpen);
         }
     }
 }

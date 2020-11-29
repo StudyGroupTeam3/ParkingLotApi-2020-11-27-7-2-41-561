@@ -57,6 +57,7 @@ namespace ParkingLotApi.Dtos
     public class ParkingLotCapacityUpdateDto
     {
         [Required]
+        [Range(0, int.MaxValue)]
         public int Capacity { get; set; }
     }
 }

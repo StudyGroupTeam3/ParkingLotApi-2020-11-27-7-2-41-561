@@ -60,6 +60,7 @@ namespace ParkingLotApi.Services
             }
 
             parkingLotEntity.Capacity = parkingLotCapacityUpdateModel.Capacity;
+            parkingLotContext.SaveChanges();
             return new ParkingLotDto(parkingLotEntity);
         }
 

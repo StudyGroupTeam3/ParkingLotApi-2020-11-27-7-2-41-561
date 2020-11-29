@@ -55,7 +55,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_201_with_parking_lot_id_in_location_when_POST_AddParkingLot()
+        public async Task Should_POST_return_201_with_parking_lot_id_in_location_when_AddParkingLot()
         {
             // given
             parkingLotContext.Database.EnsureDeleted();
@@ -82,7 +82,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_400_if_not_all_required_property_is_provided_when_POST_AddParkingLot()
+        public async Task Should_POST_return_400_if_not_all_required_property_is_provided_when_AddParkingLot()
         {
             // given
             parkingLotContext.Database.EnsureDeleted();
@@ -103,7 +103,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_400_if_capacity_provided_is_minus_when_POST_AddParkingLot()
+        public async Task Should_POST_return_400_if_capacity_provided_is_minus_when_AddParkingLot()
         {
             // given
             parkingLotContext.Database.EnsureDeleted();
@@ -125,7 +125,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_400_parking_lot_name_already_exists_when_POST_AddParkingLot()
+        public async Task Should_POST_return_400_parking_lot_name_already_exists_when_AddParkingLot()
         {
             // given
             AddThreeParkingLotsIntoDB();
@@ -147,7 +147,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_list_of_parking_lot_dtos_in_specified_page_range_when_GET_GetParkingLotsByPages()
+        public async Task Should_GET_return_list_of_parking_lot_dtos_in_specified_page_range_when_GetParkingLotsByPages()
         {
             // given
             List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
@@ -162,7 +162,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_parking_lot_dto_specified_by_id_when_GET_GetParkingLotsById()
+        public async Task Should_GET_return_parking_lot_dto_specified_by_id_when_GetParkingLotsById()
         {
             // given
             List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
@@ -177,7 +177,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_deleted_parking_lot_dto_specified_by_id_when_DELETE_DeleteParkingLotsById()
+        public async Task Should_DELETE_return_deleted_parking_lot_dto_specified_by_id_when_DeleteParkingLotsById()
         {
             // given
             List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
@@ -192,7 +192,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_404_if_parking_lot_id_does_not_exist_when_DELETE_DeleteParkingLotsById()
+        public async Task Should_DELETE_return_404_if_parking_lot_id_does_not_exist_when_DeleteParkingLotsById()
         {
             // given
             List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
@@ -205,7 +205,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_capacity_updated_parking_lot_dto_specified_by_id_when_PATCH_UpdateParkingLotCapacityById()
+        public async Task Should_PATCH_return_capacity_updated_parking_lot_dto_specified_by_id_when_UpdateParkingLotCapacityById()
         {
             // given
             List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
@@ -228,7 +228,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_404_if_parking_lot_id_does_not_exist_when_PATCH_UpdateParkingLotCapacityById()
+        public async Task Should_PATCH_return_404_if_parking_lot_id_does_not_exist_when_UpdateParkingLotCapacityById()
         {
             // given
             List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
@@ -243,12 +243,27 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_return_400_if_does_not_provided_capacity_when_PATCH_UpdateParkingLotCapacityById()
+        public async Task Should_PATCH_return_400_if_does_not_provide_capacity_when_UpdateParkingLotCapacityById()
         {
             // given
             List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
 
             // when
+            var httpContent = new StringContent(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var response = await client.PatchAsync($"/parkinglots/{parkingLotIds[1]}", httpContent);
+
+            // then
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_PATCH_return_400_if_provided_capacity_is_minus_when_UpdateParkingLotCapacityById()
+        {
+            // given
+            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+
+            // when
+            var content = JsonConvert.SerializeObject(new ParkingLotCapacityUpdateDto { Capacity = -1 });
             var httpContent = new StringContent(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json);
             var response = await client.PatchAsync($"/parkinglots/{parkingLotIds[1]}", httpContent);
 

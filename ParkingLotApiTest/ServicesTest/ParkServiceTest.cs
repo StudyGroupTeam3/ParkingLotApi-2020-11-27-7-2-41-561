@@ -42,7 +42,11 @@ namespace ParkingLotApiTest.ServicesTest
                     Location = "Area1",
                 },
             };
-
+            parkingLots.ForEach(parkingLot =>
+            {
+                parkingLotContext.ParkingLots.Add(parkingLot);
+                parkingLotContext.SaveChanges();
+            });
             List<ParkingOrderEntity> parkingOrders = new List<ParkingOrderEntity>()
             {
                 new ParkingOrderEntity
@@ -60,11 +64,6 @@ namespace ParkingLotApiTest.ServicesTest
                     OrderStatus = false,
                 },
             };
-            parkingLots.ForEach(parkingLot =>
-            {
-                parkingLotContext.ParkingLots.Add(parkingLot);
-                parkingLotContext.SaveChanges();
-            });
             parkingOrders.ForEach(parkingOrder =>
             {
                 parkingLotContext.ParkingOrders.Add(parkingOrder);
@@ -92,7 +91,11 @@ namespace ParkingLotApiTest.ServicesTest
                     Location = "Area1",
                 },
             };
-
+            parkingLots.ForEach(parkingLot =>
+            {
+                parkingLotContext.ParkingLots.Add(parkingLot);
+                parkingLotContext.SaveChanges();
+            });
             List<ParkingOrderEntity> parkingOrders = new List<ParkingOrderEntity>()
             {
                 new ParkingOrderEntity
@@ -110,11 +113,6 @@ namespace ParkingLotApiTest.ServicesTest
                     OrderStatus = true,
                 },
             };
-            parkingLots.ForEach(parkingLot =>
-            {
-                parkingLotContext.ParkingLots.Add(parkingLot);
-                parkingLotContext.SaveChanges();
-            });
             parkingOrders.ForEach(parkingOrder =>
             {
                 parkingLotContext.ParkingOrders.Add(parkingOrder);
@@ -144,6 +142,69 @@ namespace ParkingLotApiTest.ServicesTest
                                 parkingOrder.PlateNumber == actualParkingOrderDto.PlateNumber &&
                                 parkingOrder.OrderStatus == true).ToList();
             Assert.Single(matchedParkingOrder);
+        }
+
+        [Fact]
+        public async Task Should_change_parking_order_status_to_false_when_Leave()
+        {
+            // given
+            parkingLotContext.Database.EnsureDeleted();
+            parkingLotContext.Database.EnsureCreated();
+            List<ParkingLotEntity> parkingLots = new List<ParkingLotEntity>()
+            {
+                new ParkingLotEntity
+                {
+                    Name = "NO.1",
+                    Capacity = 2,
+                    Location = "Area1",
+                },
+            };
+            parkingLots.ForEach(parkingLot =>
+            {
+                parkingLotContext.ParkingLots.Add(parkingLot);
+                parkingLotContext.SaveChanges();
+            });
+            List<ParkingOrderEntity> parkingOrders = new List<ParkingOrderEntity>()
+            {
+                new ParkingOrderEntity
+                {
+                    NameOfParkingLot = "NO.1",
+                    PlateNumber = "ABC000",
+                    CreationTime = DateTime.Now,
+                    OrderStatus = true,
+                },
+                new ParkingOrderEntity
+                {
+                    NameOfParkingLot = "NO.1",
+                    PlateNumber = "ABC001",
+                    CreationTime = DateTime.Now,
+                    OrderStatus = true,
+                },
+            };
+            parkingOrders.ForEach(parkingOrder =>
+            {
+                parkingLotContext.ParkingOrders.Add(parkingOrder);
+                parkingLotContext.SaveChanges();
+            });
+            var parkingOrderDto = new ParkingOrderDto
+            {
+                NameOfParkingLot = "NO.1",
+                PlateNumber = "ABC000",
+            };
+            // when
+            await parkService.Leave(parkingOrderDto);
+            // then
+            var matchedParkingOrderClosed = parkingLotContext.ParkingOrders.Where(
+              parkingOrder => parkingOrder.NameOfParkingLot == parkingOrderDto.NameOfParkingLot &&
+                              parkingOrder.PlateNumber == parkingOrderDto.PlateNumber &&
+                              parkingOrder.OrderStatus == false &&
+                              parkingOrder.CloseTime > parkingOrder.CreationTime).ToList();
+            Assert.Single(matchedParkingOrderClosed);
+            var matchedParkingOrderOpen = parkingLotContext.ParkingOrders.Where(
+              parkingOrder => parkingOrder.NameOfParkingLot == parkingOrderDto.NameOfParkingLot &&
+                              parkingOrder.PlateNumber == parkingOrderDto.PlateNumber &&
+                              parkingOrder.OrderStatus == true).ToList();
+            Assert.Empty(matchedParkingOrderOpen);
         }
     }
 }

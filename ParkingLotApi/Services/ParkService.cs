@@ -46,5 +46,17 @@ namespace ParkingLotApi.Services
             await parkingLotContext.SaveChangesAsync();
             return new ParkingOrderDto(parkingOrderEntity);
         }
+
+        public async Task Leave(ParkingOrderDto parkingOrderDto)
+        {
+            var parkingOrderEntity = parkingLotContext.ParkingOrders.FirstOrDefault(
+                parkingOrder =>
+                                parkingOrder.NameOfParkingLot == parkingOrderDto.NameOfParkingLot &&
+                                parkingOrder.PlateNumber == parkingOrderDto.PlateNumber &&
+                                parkingOrder.OrderStatus == true);
+            parkingOrderEntity.OrderStatus = false;
+            parkingOrderEntity.CloseTime = DateTime.Now;
+            await parkingLotContext.SaveChangesAsync();
+        }
     }
 }
