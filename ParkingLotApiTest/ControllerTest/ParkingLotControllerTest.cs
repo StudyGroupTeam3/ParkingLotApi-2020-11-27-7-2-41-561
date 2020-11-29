@@ -27,8 +27,6 @@ namespace ParkingLotApiTest.ControllerTest
             var scope = Factory.Services.CreateScope();
             var scopedServices = scope.ServiceProvider;
             var parkingLotContext = scopedServices.GetRequiredService<ParkingLotContext>();
-            parkingLotContext.Database.EnsureDeleted();
-            parkingLotContext.Database.EnsureCreated();
 
             ParkingLotDto parkingLotDto = new ParkingLotDto
             {
@@ -45,7 +43,8 @@ namespace ParkingLotApiTest.ControllerTest
 
             // then
             int parkingLotId = int.Parse(await response.Content.ReadAsStringAsync());
-            Assert.Equal(1, parkingLotId);
+            var actualParkingLotDto = new ParkingLotDto(parkingLotContext.ParkingLots.Find(parkingLotId));
+            Assert.Equal(parkingLotDto, actualParkingLotDto);
         }
     }
 }

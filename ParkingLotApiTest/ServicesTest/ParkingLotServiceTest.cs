@@ -35,10 +35,12 @@ namespace ParkingLotApiTest
 
             // when
             var parkingLotService = new ParkingLotService(parkingLotContext);
+            int parkingLotId = await parkingLotService.AddParkingLot(parkingLotDto);
+            var actualParkingLotDto = new ParkingLotDto(parkingLotContext.ParkingLots.Find(parkingLotId));
 
             // then
-            int parkingLotId = await parkingLotService.AddParkingLot(parkingLotDto);
-            Assert.Equal(1, parkingLotId);
+
+            Assert.Equal(parkingLotDto, actualParkingLotDto);
         }
     }
 }
