@@ -151,6 +151,28 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(expectedCapacity, returnedDto.Capacity);
         }
 
+        //[Fact]
+        //public async Task Should_CloseOrder_Method_Success_Given_Correct_Ticket()
+        //{
+        //    //Given
+        //    var client = GetClient();
+        //    var parkinglotDto = GenerateOneParkinglot();
+        //    await AddOneParkinglotInTestDatabase(parkinglotDto);
+        //    UpdateModel updateModel = new UpdateModel("SuperPark_1", 30);
+        //    var expectedCapacity = updateModel.Capacity;
+
+        //    //When
+        //    var httpContent = JsonConvert.SerializeObject(updateModel);
+        //    StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+        //    await client.PatchAsync("/ParkingLotApi/Orders", content);
+        //    var getResponse = await client.GetAsync("/ParkingLotApi/Orders? name = SuperPark_1");
+        //    var body = await getResponse.Content.ReadAsStringAsync();
+        //    var returnedDto = JsonConvert.DeserializeObject<List<ParkinglotDTO>>(body)[0];
+
+        //    //Then
+        //    Assert.Equal(expectedStatus, actualStatus);
+        //}
+
         private async Task<HttpResponseMessage> AddOneParkinglotInTestDatabase(ParkinglotDTO parkinglotDto)
         {
             var client = GetClient();

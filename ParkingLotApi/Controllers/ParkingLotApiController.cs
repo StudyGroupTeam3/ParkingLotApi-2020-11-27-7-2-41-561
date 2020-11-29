@@ -101,5 +101,20 @@ namespace ParkingLotApi.Controllers
             var orderDto = await this.parkingLotService.GetOrderById(id);
             return Ok(orderDto);
         }
+
+        [HttpPatch("Orders")]
+        public async Task<ActionResult> CloseParkingOrder(OrderDto orderDto)
+        {
+            var result = await parkingLotService.CloseOrder(orderDto);
+            if (result == false)
+            {
+                return NotFound(new
+                {
+                    message = "Unrecognized ticket, please provide correct parking ticket"
+                });
+            }
+
+            return Ok();
+        }
     }
 }

@@ -112,6 +112,7 @@ namespace ParkingLotApi.Service
             {
                 targetOrder.OrderStatus = "Closed";
                 targetOrder.ClosedTime = DateTime.Now;
+                await parkingLotDbContext.SaveChangesAsync();
                 return true;
             }
 
