@@ -1,5 +1,4 @@
-﻿using System.Collections.Specialized;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ParkingLotApi.Dtos;
 using ParkingLotApi.Entities;
 using ParkingLotApi.Services;

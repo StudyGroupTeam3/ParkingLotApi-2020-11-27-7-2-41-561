@@ -27,7 +27,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Story2_AC1_Should_add_order_correctly()
+        public async Task Story2_AC1_3_Should_add_order_correctly()
         {
             // given
             var parkingLot = new ParkingLot("Lot1", 2, "location1");
