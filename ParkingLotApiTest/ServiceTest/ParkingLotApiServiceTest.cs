@@ -137,6 +137,35 @@ namespace ParkingLotApiTest.ServiceTest
             Assert.Equal(newOrderDto, actualOrderDto);
         }
 
+        [Fact]
+        public async Task Should_CloseOrder_Success_Via_ParkingLotService()
+        {
+            //Given
+            var context = GetParkingLotDbContext();
+            ParkingLotApiService parkingLotApiService = new ParkingLotApiService(context);
+            List<ParkinglotDTO> parkingLotDtos = GenerateSomeParkinglots();
+            foreach (var parkingLotDto in parkingLotDtos)
+            {
+                await parkingLotApiService.AddParkingLotAsnyc(parkingLotDto);
+            }
+
+            OrderDto newOrderDto = new OrderDto()
+            {
+                OrderNumber = Guid.NewGuid(),
+                NameOfParkingLot = "SuperPark_1",
+                PlateNumber = "RJ_963824",
+                CreationTime = DateTime.Now,
+            };
+            await parkingLotApiService.CreateOrder(newOrderDto);
+
+            //When
+            await parkingLotApiService.CloseOrder(newOrderDto);
+            var closedOrder = context.Orders.FirstOrDefault(order => order.OrderNumber == newOrderDto.OrderNumber);
+
+            //Then
+            Assert.Equal("closed", closedOrder.OrderStatus);
+        }
+
         private ParkingLotContext GetParkingLotDbContext()
         {
             var scope = Factory.Services.CreateScope();

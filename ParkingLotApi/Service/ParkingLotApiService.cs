@@ -99,5 +99,9 @@ namespace ParkingLotApi.Service
             await parkingLotDbContext.SaveChangesAsync();
             return orderEntity.Id;
         }
+
+        public async Task CloseOrder(OrderDto newOrderDto)
+        {
+        }
     }
 }
