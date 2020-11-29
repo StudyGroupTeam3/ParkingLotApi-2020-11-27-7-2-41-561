@@ -164,6 +164,34 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
+        [Fact]
+        public async Task Should_Update_parkingLot_Capacity_Patch_UpdateParkingLot()
+        {
+            // given
+            ParkingLotDto parkingLotDto = new ParkingLotDto()
+            {
+                Name = "NO.1",
+                Capacity = 50,
+                Location = "BeiJingSouthRailWayStationParkingLot"
+            };
+            string httpContent = JsonConvert.SerializeObject(parkingLotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var responsePost = await client.PostAsync("/parkinglots", content);
+
+            // when
+            UpdateParkingLotDto updateParkingLotDto = new UpdateParkingLotDto()
+            {
+                Name = "NO.1",
+                Capacity = 10,
+                Location = "BeiJingSouthRailWayStationParkingLot"
+            };
+            string httpContentPatch = JsonConvert.SerializeObject(updateParkingLotDto);
+            StringContent contentPatch = new StringContent(httpContentPatch, Encoding.UTF8, MediaTypeNames.Application.Json);
+            var response = await client.PatchAsync(responsePost.Headers.Location, contentPatch);
+            // then
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
         private ParkingLotDto GetParkingLotDto(string name)
         {
             var parkingLotDto = new ParkingLotDto()
