@@ -52,8 +52,13 @@ namespace ParkingLotApi.Controllers
         }
 
         [HttpGet("ParkingLots")]
-        public async Task<ActionResult<ParkinglotDTO>> GetAll(int id)
+        public async Task<ActionResult<List<ParkinglotDTO>>> GetAll(int? startPage)
         {
+            if (startPage.HasValue)
+            {
+                return Ok(await parkingLotService.GetByPage(startPage.Value));
+            }
+
             return Ok(await parkingLotService.GetAll());
         }
 
