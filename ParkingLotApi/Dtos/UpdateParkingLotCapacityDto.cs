@@ -7,6 +7,10 @@ namespace ParkingLotApi.Dtos
 {
     public class UpdateParkingLotCapacityDto
     {
+        public UpdateParkingLotCapacityDto()
+        {
+        }
+
         public UpdateParkingLotCapacityDto(int capacity)
         {
             this.Capacity = capacity;

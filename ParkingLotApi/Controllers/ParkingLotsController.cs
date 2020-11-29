@@ -42,7 +42,8 @@ namespace ParkingLotApi.Controllers
         [HttpGet("pages/{pageIndex}")]
         public async Task<ActionResult<List<ParkingLotDto>>> GetParkingLotByPageIndex(int pageIndex)
         {
-            return null;
+            var allLots = await parkingLotService.GetParkingLotsByPage(pageIndex);
+            return Ok(allLots);
         }
 
         [HttpGet("{parkingLotName}")]
@@ -52,10 +53,11 @@ namespace ParkingLotApi.Controllers
             return Ok(parkingLotDto);
         }
 
-        [HttpPatch("{name}")]
-        public async Task<ActionResult<ParkingLotDto>> UpdateParkingLotCapacity(string parkingLotName)
-        {
-            return null;
+        [HttpPatch("{parkingLotName}")]
+        public async Task<ActionResult<ParkingLotDto>> UpdateParkingLotCapacity(string parkingLotName, UpdateParkingLotCapacityDto updateParkingLotCapacity)
+        { 
+            var changedParkingLotDto = await parkingLotService.UpdateParkingLotCapacity(parkingLotName, updateParkingLotCapacity);
+            return Ok(changedParkingLotDto);
         }
     }
 }

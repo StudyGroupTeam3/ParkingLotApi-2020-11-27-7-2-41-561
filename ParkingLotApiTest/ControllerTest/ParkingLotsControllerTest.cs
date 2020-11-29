@@ -144,6 +144,33 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Null(responseParkingLotAfterDelete.Name);
         }
 
+        [Fact]
+        public async Task Should_update_parkingLot_capacity_when_update_parkingLot_by_name()
+        {
+            // given
+            var client = GetClient();
+            ParkingLotDto parkingLotDto = GenerateParkingLotDto();
+            UpdateParkingLotCapacityDto updateParkingLotCapacityDto = new UpdateParkingLotCapacityDto(10);
+            var httpContent = JsonConvert.SerializeObject(parkingLotDto);
+            StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+            await client.PostAsync("/ParkingLots", content);
+            var response = await client.GetAsync($"/ParkingLots/{parkingLotDto.Name}");
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var responseParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(responseBody);
+            Assert.Equal(parkingLotDto.Capacity, responseParkingLot.Capacity);
+            Assert.NotEqual(updateParkingLotCapacityDto.Capacity, responseParkingLot.Capacity);
+            var httpPatchContent = JsonConvert.SerializeObject(updateParkingLotCapacityDto);
+            StringContent patchContent = new StringContent(httpPatchContent, Encoding.UTF8, MediaTypeNames.Application.Json);
+
+            // when
+            var patchResponse = await client.PatchAsync($"/ParkingLots/{parkingLotDto.Name}", patchContent);
+            var patchResponseBody = await patchResponse.Content.ReadAsStringAsync();
+            var changedParkingLot = JsonConvert.DeserializeObject<ParkingLotDto>(patchResponseBody);
+
+            // then
+            Assert.Equal(updateParkingLotCapacityDto.Capacity, changedParkingLot.Capacity);
+        }
+
         private static ParkingLotDto GenerateParkingLotDto()
         {
             ParkingLotDto parkingLotDto = new ParkingLotDto
