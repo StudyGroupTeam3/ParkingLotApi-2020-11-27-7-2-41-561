@@ -163,7 +163,7 @@ namespace ParkingLotApiTest.ServiceTest
             var closedOrder = context.Orders.FirstOrDefault(order => order.OrderNumber == newOrderDto.OrderNumber);
 
             //Then
-            Assert.Equal("closed", closedOrder.OrderStatus);
+            Assert.Equal("Closed", closedOrder.OrderStatus);
         }
 
         private ParkingLotContext GetParkingLotDbContext()

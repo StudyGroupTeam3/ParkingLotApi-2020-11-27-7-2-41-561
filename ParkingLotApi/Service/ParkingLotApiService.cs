@@ -100,8 +100,22 @@ namespace ParkingLotApi.Service
             return orderEntity.Id;
         }
 
-        public async Task CloseOrder(OrderDto newOrderDto)
+        public async Task<bool> CloseOrder(OrderDto newOrderDto)
         {
+            var targetOrder = parkingLotDbContext.Orders.FirstOrDefault(order =>
+                order.OrderNumber == newOrderDto.OrderNumber
+                && order.PlateNumber == newOrderDto.PlateNumber
+                && order.NameOfParkingLot == newOrderDto.NameOfParkingLot
+                && order.CreationTime == newOrderDto.CreationTime);
+
+            if (targetOrder != null)
+            {
+                targetOrder.OrderStatus = "Closed";
+                targetOrder.ClosedTime = DateTime.Now;
+                return true;
+            }
+
+            return false;
         }
     }
 }
