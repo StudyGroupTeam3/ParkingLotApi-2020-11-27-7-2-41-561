@@ -34,7 +34,6 @@ namespace ParkingLotApiTest.ControllerTest
             var foundParkingOrder = await context.ParkingOrders.FirstOrDefaultAsync(parkingOrderEntity => parkingOrderEntity.OrderNumber == parkingOrderNumber);
 
             // then
-            Assert.Equal(1, context.ParkingOrders.Count());
             Assert.Equal(parkingOrderDto.OrderNumber, foundParkingOrder.OrderNumber);
         }
 

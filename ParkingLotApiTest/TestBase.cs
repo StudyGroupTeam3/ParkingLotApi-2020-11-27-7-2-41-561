@@ -23,6 +23,7 @@ namespace ParkingLotApiTest
             var context = scopedServices.GetRequiredService<ParkingLotContext>();
 
             context.ParkingLots.RemoveRange(context.ParkingLots);
+            context.ParkingOrders.RemoveRange(context.ParkingOrders);
             context.SaveChanges();
         }
 
