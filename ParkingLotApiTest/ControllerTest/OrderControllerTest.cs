@@ -1,17 +1,14 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using ParkingLotApi;
 using ParkingLotApi.Dtos;
-using ParkingLotApi.Repository;
-using System.Net;
-using System.Net.Http;
-using System.Net.Mime;
-using System.Text;
-using System.Threading.Tasks;
 using ParkingLotApi.Entities;
 using ParkingLotApi.Models;
+using ParkingLotApi.Repository;
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace ParkingLotApiTest.ControllerTest
@@ -21,6 +18,7 @@ namespace ParkingLotApiTest.ControllerTest
     {
         private readonly ParkingLotContext context;
         private readonly HttpClient client;
+        private readonly RequestResponseContent content = new RequestResponseContent();
         public OrderControllerTest(CustomWebApplicationFactory<Startup> factory) : base(factory)
         {
             var scope = Factory.Services.CreateScope();
@@ -39,14 +37,14 @@ namespace ParkingLotApiTest.ControllerTest
             var order3 = new OrderRequest("Lot1", "JA00003");
 
             // when
-            await client.PostAsync("/parkinglots", GetRequestContent(parkingLot));
-            var response = await client.PostAsync("/orders", GetRequestContent(order1));
-            var orderReturn = await GetResponseContent<Order>(response);
+            await client.PostAsync("/parkinglots", content.GetRequestContent(parkingLot));
+            var response = await client.PostAsync("/orders", content.GetRequestContent(order1));
+            var orderReturn = await content.GetResponseContent<Order>(response);
 
-            var responseOrderNotClosed = await client.PostAsync("/orders", GetRequestContent(order1));
+            var responseOrderNotClosed = await client.PostAsync("/orders", content.GetRequestContent(order1));
 
-            await client.PostAsync("/orders", GetRequestContent(order2));
-            var responseFullLot = await client.PostAsync("/orders", GetRequestContent(order3));
+            await client.PostAsync("/orders", content.GetRequestContent(order2));
+            var responseFullLot = await client.PostAsync("/orders", content.GetRequestContent(order3));
 
             // then
             Assert.Equal(orderReturn, new Order(context.Orders.FirstOrDefaultAsync().Result));
@@ -68,10 +66,10 @@ namespace ParkingLotApiTest.ControllerTest
             var updateModel = new OrderUpdateModel(closeTime, Status.Close);
 
             // when
-            await client.PostAsync("/parkinglots", GetRequestContent(parkingLot));
-            var responseAddOrder = await client.PostAsync("/orders", GetRequestContent(order));
-            var response = await client.PatchAsync(responseAddOrder.Headers.Location, GetRequestContent(updateModel));
-            var responseNotFound = await client.PatchAsync("error uri", GetRequestContent(updateModel));
+            await client.PostAsync("/parkinglots", content.GetRequestContent(parkingLot));
+            var responseAddOrder = await client.PostAsync("/orders", content.GetRequestContent(order));
+            var response = await client.PatchAsync(responseAddOrder.Headers.Location, content.GetRequestContent(updateModel));
+            var responseNotFound = await client.PatchAsync("error uri", content.GetRequestContent(updateModel));
 
             // then
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -79,22 +77,6 @@ namespace ParkingLotApiTest.ControllerTest
             Assert.Equal(closeTime, context.Orders.FirstOrDefaultAsync().Result.CloseTime);
 
             Assert.Equal(HttpStatusCode.NotFound, responseNotFound.StatusCode);
-        }
-
-        private async Task<T> GetResponseContent<T>(HttpResponseMessage response)
-        {
-            var body = await response.Content.ReadAsStringAsync();
-            var content = JsonConvert.DeserializeObject<T>(body);
-
-            return content;
-        }
-
-        private StringContent GetRequestContent<T>(T requestBody)
-        {
-            var httpContent = JsonConvert.SerializeObject(requestBody);
-            var content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-
-            return content;
         }
     }
 }

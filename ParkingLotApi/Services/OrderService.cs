@@ -24,14 +24,6 @@ namespace ParkingLotApi.Services
             return orderEntity.Entity;
         }
 
-        public async Task<OrderEntity> AddOrder<T>(OrderRequest order)
-        {
-            var orderEntity = await context.Orders.AddAsync(new OrderEntity(order));
-            await context.SaveChangesAsync();
-
-            return orderEntity.Entity;
-        }
-
         public async Task<List<OrderEntity>> GetOrders()
         {
             var orderEntities = await context.Orders.ToListAsync();

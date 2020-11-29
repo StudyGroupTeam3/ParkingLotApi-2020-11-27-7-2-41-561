@@ -52,6 +52,7 @@ namespace ParkingLotApi.Controllers
             }
 
             var allLots = await service.GetAllParkingLots();
+
             return Ok(allLots);
         }
 
@@ -66,6 +67,7 @@ namespace ParkingLotApi.Controllers
             }
 
             await service.DeleteParkingLot(name);
+
             return NoContent();
         }
 
@@ -80,6 +82,7 @@ namespace ParkingLotApi.Controllers
             }
 
             await service.UpdateParkingLot(name, data);
+
             return NoContent();
         }
     }
