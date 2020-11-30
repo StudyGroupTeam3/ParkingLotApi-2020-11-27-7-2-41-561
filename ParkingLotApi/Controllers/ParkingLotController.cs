@@ -58,7 +58,7 @@ namespace ParkingLotApi.Controllers
         [HttpGet]
         public async Task<ActionResult<List<string>>> GetAll(int page)
         {
-            if (page != 0)
+            if (page > 0)
             {
                 var lots = await service.GetAllParkingLots(page);
                 return Ok(lots);

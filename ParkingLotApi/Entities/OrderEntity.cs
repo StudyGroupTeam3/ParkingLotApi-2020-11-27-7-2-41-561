@@ -1,8 +1,7 @@
-﻿using System;
+﻿using ParkingLotApi.Dtos;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using ParkingLotApi.Dtos;
 
 namespace ParkingLotApi.Entities
 {
@@ -29,7 +28,6 @@ namespace ParkingLotApi.Entities
         public Status Status { get; set; }
         [Key]
         public int OrderNumber { get; set; }
-        [ForeignKey("ParkingLotName")]
         public string ParkingLotName { get; set; }
         public string PlateNumber { get; set; }
         public DateTime CreationTime { get; set; }

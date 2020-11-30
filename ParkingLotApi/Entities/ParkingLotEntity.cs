@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using ParkingLotApi.Dtos;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using ParkingLotApi.Dtos;
 
 namespace ParkingLotApi.Entities
 {
@@ -16,14 +15,11 @@ namespace ParkingLotApi.Entities
             Name = parkingLot.Name;
             Capacity = parkingLot.Capacity;
             Location = parkingLot.Location;
-            Orders = new List<OrderEntity>();
         }
 
         [Key]
         public string Name { get; set; }
         public int Capacity { get; set; }
         public string Location { get; set; }
-        [ForeignKey("ParkingLotName")]
-        public ICollection<OrderEntity> Orders { get; set; }
     }
 }
