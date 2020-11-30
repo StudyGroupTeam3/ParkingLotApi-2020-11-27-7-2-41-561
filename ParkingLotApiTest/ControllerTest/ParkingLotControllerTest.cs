@@ -55,7 +55,7 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_POST_return_201_with_parking_lot_id_in_location_when_AddParkingLot()
+        public async Task Should_POST_return_201_with_parking_lot_name_in_location_when_AddParkingLot()
         {
             // given
             parkingLotContext.Database.EnsureDeleted();
@@ -75,9 +75,9 @@ namespace ParkingLotApiTest.ControllerTest
 
             // then
             var parkingLotUrl = response.Headers.Location;
-            var parkingLotId = int.Parse(parkingLotUrl.ToString().Split('/').Last());
-            Assert.Equal($"http://localhost/parkinglots/{parkingLotId}", parkingLotUrl.ToString());
-            var actualParkingLotDto = new ParkingLotDto(parkingLotContext.ParkingLots.Find(parkingLotId));
+            var parkingLotName = parkingLotUrl.ToString().Split('/').Last();
+            Assert.Equal($"http://localhost/parkinglots/{parkingLotName}", parkingLotUrl.ToString());
+            var actualParkingLotDto = new ParkingLotDto(parkingLotContext.ParkingLots.FirstOrDefault(parkingLot => parkingLot.Name == parkingLotName));
             Assert.Equal(parkingLotDto, actualParkingLotDto);
         }
 
@@ -150,7 +150,7 @@ namespace ParkingLotApiTest.ControllerTest
         public async Task Should_GET_return_list_of_parking_lot_dtos_in_specified_page_range_when_GetParkingLotsByPages()
         {
             // given
-            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+            List<string> parkingLotNames = AddThreeParkingLotsIntoDB();
 
             // when
             var response = await client.GetAsync("/parkinglots?pageIndex=2&pageSize=2");
@@ -162,13 +162,13 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_GET_return_parking_lot_dto_specified_by_id_when_GetParkingLotsById()
+        public async Task Should_GET_return_parking_lot_dto_specified_by_name_when_GetParkingLotsByName()
         {
             // given
-            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+            List<string> parkingLotNames = AddThreeParkingLotsIntoDB();
 
             // when
-            var response = await client.GetAsync($"/parkinglots/{parkingLotIds[1]}");
+            var response = await client.GetAsync($"/parkinglots/{parkingLotNames[1]}");
             response.EnsureSuccessStatusCode();
 
             // then
@@ -177,13 +177,13 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_DELETE_return_deleted_parking_lot_dto_specified_by_id_when_DeleteParkingLotsById()
+        public async Task Should_DELETE_return_deleted_parking_lot_dto_specified_by_name_when_DeleteParkingLotsByName()
         {
             // given
-            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+            List<string> parkingLotNames = AddThreeParkingLotsIntoDB();
 
             // when
-            var response = await client.DeleteAsync($"/parkinglots/{parkingLotIds[1]}");
+            var response = await client.DeleteAsync($"/parkinglots/{parkingLotNames[1]}");
             response.EnsureSuccessStatusCode();
 
             // then
@@ -192,28 +192,28 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_DELETE_return_404_if_parking_lot_id_does_not_exist_when_DeleteParkingLotsById()
+        public async Task Should_DELETE_return_404_if_parking_lot_name_does_not_exist_when_DeleteParkingLotsByName()
         {
             // given
-            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+            List<string> parkingLotNames = AddThreeParkingLotsIntoDB();
 
             // when
-            var response = await client.DeleteAsync($"/parkinglots/{parkingLotIds.Last() + 1}");
+            var response = await client.DeleteAsync($"/parkinglots/{parkingLotNames.Last() + 1}");
 
             // then
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
-        public async Task Should_PATCH_return_capacity_updated_parking_lot_dto_specified_by_id_when_UpdateParkingLotCapacityById()
+        public async Task Should_PATCH_return_capacity_updated_parking_lot_dto_specified_by_name_when_UpdateParkingLotCapacityByName()
         {
             // given
-            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+            List<string> parkingLotNames = AddThreeParkingLotsIntoDB();
 
             // when
             var content = JsonConvert.SerializeObject(new ParkingLotCapacityUpdateDto { Capacity = 20 });
             var httpContent = new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var response = await client.PatchAsync($"/parkinglots/{parkingLotIds[1]}", httpContent);
+            var response = await client.PatchAsync($"/parkinglots/{parkingLotNames[1]}", httpContent);
             response.EnsureSuccessStatusCode();
             var expactedParkingLotDto = new ParkingLotDto
             {
@@ -228,56 +228,56 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Should_PATCH_return_404_if_parking_lot_id_does_not_exist_when_UpdateParkingLotCapacityById()
+        public async Task Should_PATCH_return_404_if_parking_lot_name_does_not_exist_when_UpdateParkingLotCapacityByName()
         {
             // given
-            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+            List<string> parkingLotNames = AddThreeParkingLotsIntoDB();
 
             // when
             var content = JsonConvert.SerializeObject(new ParkingLotCapacityUpdateDto { Capacity = 20 });
             var httpContent = new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var response = await client.PatchAsync($"/parkinglots/{parkingLotIds.Last() + 1}", httpContent);
+            var response = await client.PatchAsync($"/parkinglots/{parkingLotNames.Last() + 1}", httpContent);
 
             // then
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
-        public async Task Should_PATCH_return_400_if_does_not_provide_capacity_when_UpdateParkingLotCapacityById()
+        public async Task Should_PATCH_return_400_if_does_not_provide_capacity_when_UpdateParkingLotCapacityByName()
         {
             // given
-            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+            List<string> parkingLotNames = AddThreeParkingLotsIntoDB();
 
             // when
             var httpContent = new StringContent(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var response = await client.PatchAsync($"/parkinglots/{parkingLotIds[1]}", httpContent);
+            var response = await client.PatchAsync($"/parkinglots/{parkingLotNames[1]}", httpContent);
 
             // then
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]
-        public async Task Should_PATCH_return_400_if_provided_capacity_is_minus_when_UpdateParkingLotCapacityById()
+        public async Task Should_PATCH_return_400_if_provided_capacity_is_minus_when_UpdateParkingLotCapacityByName()
         {
             // given
-            List<int> parkingLotIds = AddThreeParkingLotsIntoDB();
+            List<string> parkingLotNames = AddThreeParkingLotsIntoDB();
 
             // when
             var content = JsonConvert.SerializeObject(new ParkingLotCapacityUpdateDto { Capacity = -1 });
             var httpContent = new StringContent(string.Empty, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var response = await client.PatchAsync($"/parkinglots/{parkingLotIds[1]}", httpContent);
+            var response = await client.PatchAsync($"/parkinglots/{parkingLotNames[1]}", httpContent);
 
             // then
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
-        private List<int> AddThreeParkingLotsIntoDB()
+        private List<string> AddThreeParkingLotsIntoDB()
         {
             parkingLotContext.Database.EnsureDeleted();
             parkingLotContext.Database.EnsureCreated();
-            List<int> parkingLotIds = new List<int>();
-            parkingLotDtos.ForEach(async parkingLotDto => parkingLotIds.Add(await parkingLotService.AddParkingLot(parkingLotDto)));
-            return parkingLotIds;
+            List<string> parkingLotNames = new List<string>();
+            parkingLotDtos.ForEach(async parkingLotDto => parkingLotNames.Add(await parkingLotService.AddParkingLot(parkingLotDto)));
+            return parkingLotNames;
         }
     }
 }

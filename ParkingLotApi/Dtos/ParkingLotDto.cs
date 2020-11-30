@@ -22,8 +22,8 @@ namespace ParkingLotApi.Dtos
 
         [Required]
         public string Name { get; set; }
-        [Required]
-        [Range(0, int.MaxValue)]
+        [Required(ErrorMessage = "out or range")]
+        [Range(0, int.MaxValue, ErrorMessage ="out or range")]
         public int Capacity { get; set; }
         [Required]
         public string Location { get; set; }

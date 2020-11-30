@@ -18,12 +18,12 @@ namespace ParkingLotApi.Services
             this.parkingLotContext = parkingLotContext;
         }
 
-        public async Task<int> AddParkingLot(ParkingLotDto parkingLotDto)
+        public async Task<string> AddParkingLot(ParkingLotDto parkingLotDto)
         {
             var parkingLotEntity = new ParkingLotEntity(parkingLotDto);
             await parkingLotContext.ParkingLots.AddAsync(parkingLotEntity);
             await parkingLotContext.SaveChangesAsync();
-            return parkingLotEntity.Id;
+            return parkingLotEntity.Name;
         }
 
         public async Task<List<ParkingLotDto>> GetParkingLotsByPage(int pageSize, int pageIndex)
@@ -32,15 +32,15 @@ namespace ParkingLotApi.Services
             return parkingLotEntities.Select(parkingLotEntity => new ParkingLotDto(parkingLotEntity)).ToList();
         }
 
-        public async Task<ParkingLotDto> GetParkingLotById(int parkingLotId)
+        public async Task<ParkingLotDto> GetParkingLotByName(string parkingLotName)
         {
-            var parkingLotEntity = await parkingLotContext.ParkingLots.FindAsync(parkingLotId);
+            var parkingLotEntity = await parkingLotContext.ParkingLots.FirstOrDefaultAsync(parkingLot => parkingLot.Name == parkingLotName);
             return parkingLotEntity is null ? null : new ParkingLotDto(parkingLotEntity);
         }
 
-        public async Task<ParkingLotDto> DeleteParkingLotById(int parkingLotId)
+        public async Task<ParkingLotDto> DeleteParkingLotByName(string parkingLotName)
         {
-            var parkingLotEntity = await parkingLotContext.ParkingLots.FindAsync(parkingLotId);
+            var parkingLotEntity = await parkingLotContext.ParkingLots.FirstOrDefaultAsync(parkingLot => parkingLot.Name == parkingLotName);
             if (parkingLotEntity is null)
             {
                 return null;
@@ -51,9 +51,9 @@ namespace ParkingLotApi.Services
             return new ParkingLotDto(parkingLotEntity);
         }
 
-        public async Task<ParkingLotDto> UpdateParkingLotCapacityById(int parkingLotId, ParkingLotCapacityUpdateDto parkingLotCapacityUpdateModel)
+        public async Task<ParkingLotDto> UpdateParkingLotCapacityByName(string parkingLotName, ParkingLotCapacityUpdateDto parkingLotCapacityUpdateModel)
         {
-            var parkingLotEntity = await parkingLotContext.ParkingLots.FindAsync(parkingLotId);
+            var parkingLotEntity = await parkingLotContext.ParkingLots.FirstOrDefaultAsync(parkingLot => parkingLot.Name == parkingLotName);
             if (parkingLotEntity is null)
             {
                 return null;
