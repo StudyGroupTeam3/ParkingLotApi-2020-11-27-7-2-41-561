@@ -33,6 +33,7 @@ namespace ParkingLotApiTest
                     var scopedServices = scope.ServiceProvider;
                     var db = scopedServices.GetRequiredService<ParkingLotContext>();
                     db.Database.EnsureCreated();
+                    db.Database.EnsureDeleted();
                 }
             });
         }

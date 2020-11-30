@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using ParkingLotApi.Entities;
 
 namespace ParkingLotApi.Repository
 {
@@ -8,5 +10,8 @@ namespace ParkingLotApi.Repository
             : base(options)
         {
         }
+
+        public DbSet<ParkingLotEntity> ParkingLots { get; set; }
+        public DbSet<ParkingOrderEntity> ParkingOrders { get; set; }
     }
 }
