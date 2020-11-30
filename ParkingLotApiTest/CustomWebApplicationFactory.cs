@@ -24,7 +24,7 @@ namespace ParkingLotApiTest
                 services.AddDbContext<ParkingLotContext>(options =>
                 {
                     InMemoryDbContextOptionsExtensions.UseInMemoryDatabase(options, "InMemoryDbForTesting");
-                });
+                }, ServiceLifetime.Transient);
 
                 var sp = services.BuildServiceProvider();
 
