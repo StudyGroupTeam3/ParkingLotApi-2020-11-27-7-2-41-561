@@ -64,7 +64,7 @@ namespace ParkingLotApiTest.ControllerTest
             // when
             var httpContent = JsonConvert.SerializeObject(parkingOrderDto);
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var response = await client.PostAsync("/parking", content);
+            var response = await client.PostAsync("/parkingorder", content);
             response.EnsureSuccessStatusCode();
 
             // then
@@ -127,7 +127,7 @@ namespace ParkingLotApiTest.ControllerTest
             // when
             var httpContent = JsonConvert.SerializeObject(parkingOrderDto);
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var response = await client.PostAsync("/parking", content);
+            var response = await client.PostAsync("/parkingorder", content);
 
             // then
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -185,7 +185,7 @@ namespace ParkingLotApiTest.ControllerTest
             // when
             var httpContent = JsonConvert.SerializeObject(parkingOrderDto);
             StringContent content = new StringContent(httpContent, Encoding.UTF8, MediaTypeNames.Application.Json);
-            var response = await client.PatchAsync("/parking", content);
+            var response = await client.PatchAsync("/parkingorder", content);
 
             // then
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

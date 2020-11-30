@@ -20,7 +20,7 @@ namespace ParkingLotApi.Controllers
             this.parkService = parkService;
         }
 
-        [HttpPost("parking")]
+        [HttpPost("parkingorder")]
         public async Task<ActionResult<ParkingOrderDto>> ParkCar(ParkingOrderDto parkingOrderDto)
         {
             if (!parkService.IsFreeSpaceInParkingLot(parkingOrderDto.NameOfParkingLot))
@@ -32,7 +32,7 @@ namespace ParkingLotApi.Controllers
             return Ok(actualParkingOrderDto);
         }
 
-        [HttpPatch("parking")]
+        [HttpPatch("parkingorder")]
         public async Task<ActionResult> Leave(ParkingOrderDto parkingOrderDto)
         {
             await parkService.Leave(parkingOrderDto);
