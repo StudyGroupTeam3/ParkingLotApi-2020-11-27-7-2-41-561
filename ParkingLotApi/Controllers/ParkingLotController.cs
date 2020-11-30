@@ -25,6 +25,16 @@ namespace ParkingLotApi.Controllers
         [HttpPost]
         public async Task<ActionResult<ParkingLot>> Add(ParkingLot parkingLot)
         {
+            if (parkingLot.Location == null || parkingLot.Name == null)
+            {
+                return BadRequest("location or name can not be empty");
+            }
+
+            if (parkingLot.Capacity < 0)
+            {
+                return BadRequest("capacity can not be negative");
+            }
+
             var lotFound = service.GetAllParkingLots().Result.FirstOrDefault(lot => lot.Name == parkingLot.Name);
 
             if (lotFound != null)
