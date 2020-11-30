@@ -35,7 +35,7 @@ namespace ParkingLotApi
                 options.UseMySql(Configuration.GetConnectionString("Default"));
             });
             services.AddScoped<ParkingLotService>();
-            services.AddScoped<ParkService>();
+            services.AddScoped<ParkingOrderService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
