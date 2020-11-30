@@ -92,6 +92,11 @@ namespace ParkingLotApi.Controllers
                 return NotFound("no lot match name");
             }
 
+            if (data.Capacity < 0)
+            {
+                return BadRequest("capacity can not be negative");
+            }
+
             await service.UpdateParkingLot(name, data);
 
             return NoContent();
