@@ -56,7 +56,7 @@ namespace ParkingLotApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<ParkingLot>>> GetAll(int page)
+        public async Task<ActionResult<List<string>>> GetAll(int page)
         {
             if (page != 0)
             {
@@ -64,9 +64,7 @@ namespace ParkingLotApi.Controllers
                 return Ok(lots);
             }
 
-            var allLots = await service.GetAllParkingLots();
-
-            return Ok(allLots);
+            return BadRequest("page index start with 1");
         }
 
         [HttpDelete("{name}")]

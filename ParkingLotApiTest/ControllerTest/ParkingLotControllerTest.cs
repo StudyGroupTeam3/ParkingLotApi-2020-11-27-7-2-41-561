@@ -62,28 +62,6 @@ namespace ParkingLotApiTest.ControllerTest
         }
 
         [Fact]
-        public async Task Story1_AC3_Should_get_all_parkingLots()
-        {
-            // given
-            var parkingLot1 = new ParkingLot("Lot1", 10, "location1");
-            var parkingLot2 = new ParkingLot("Lot2", 10, "location1");
-            var parkingLot3 = new ParkingLot("Lot3", 10, "location1");
-
-            // when
-            await client.PostAsync("/parkinglots", content.GetRequestContent(parkingLot1));
-            await client.PostAsync("/parkinglots", content.GetRequestContent(parkingLot2));
-            await client.PostAsync("/parkinglots", content.GetRequestContent(parkingLot3));
-
-            var response = await client.GetAsync("/parkinglots");
-            var lots = await content.GetResponseContent<List<ParkingLot>>(response);
-
-            // then
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal(3, context.ParkingLots.CountAsync().Result);
-            Assert.Equal(new List<ParkingLot>() { parkingLot3, parkingLot2, parkingLot1 }, lots);
-        }
-
-        [Fact]
         public async Task Story1_AC3_Should_return_15_most_parkingLots_each_page()
         {
             // given
@@ -98,13 +76,16 @@ namespace ParkingLotApiTest.ControllerTest
             // when
             var responsePage1 = await client.GetAsync("/parkingLots?page=1");
             var responsePage2 = await client.GetAsync("/parkingLots?page=2");
-            var lotsInPage1 = await content.GetResponseContent<List<ParkingLot>>(responsePage1);
-            var lotsInPage2 = await content.GetResponseContent<List<ParkingLot>>(responsePage2);
+            var responsePage3 = await client.GetAsync("/parkingLots?page=0");
+            var lotsInPage1 = await content.GetResponseContent<List<string>>(responsePage1);
+            var lotsInPage2 = await content.GetResponseContent<List<string>>(responsePage2);
 
             // then
             Assert.Equal(HttpStatusCode.OK, responsePage1.StatusCode);
             Assert.Equal(15, lotsInPage1.Count);
             Assert.Equal(1, lotsInPage2.Count);
+
+            Assert.Equal(HttpStatusCode.BadRequest, responsePage3.StatusCode);
         }
 
         [Fact]

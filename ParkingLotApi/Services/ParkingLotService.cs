@@ -57,7 +57,7 @@ namespace ParkingLotApi.Services
             return lotFound.Capacity - lotFound.Orders.Count(order => order.Status == Status.Open);
         }
 
-        public async Task<List<ParkingLot>> GetAllParkingLots(int page)
+        public async Task<List<string>> GetAllParkingLots(int page)
         {
             const int chunkSize = 15;
             var parkingLotEntities = await context.ParkingLots.ToListAsync();
@@ -67,7 +67,7 @@ namespace ParkingLotApi.Services
                 .ToList();
 
             var pageTotalCounts = lotLists.Count;
-            return page > pageTotalCounts ? new List<ParkingLot>() : lotLists[page - 1].Select(lot => new ParkingLot(lot)).ToList();
+            return page > pageTotalCounts ? new List<string>() : lotLists[page - 1].Select(lot => lot.Name).ToList();
         }
 
         public async Task UpdateParkingLot(string name, ParkingLotUpdateModel data)
